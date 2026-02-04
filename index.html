@@ -15,22 +15,22 @@
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-bold text-gray-700">📅 Fecha</label>
-                    <input type="date" id="fecha" class="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none">
+                    <input type="date" id="fecha" class="w-full border border-gray-300 p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-orange-500">
                 </div>
                 <div>
                     <label class="block text-sm font-bold text-gray-700">🔢 Presupuesto Nº</label>
-                    <input type="text" id="presupuestoNo" placeholder="001" class="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none">
+                    <input type="text" id="presupuestoNo" placeholder="001" class="w-full border border-gray-300 p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-orange-500">
                 </div>
             </div>
 
             <div>
                 <label class="block text-sm font-bold text-gray-700">👤 Cliente</label>
-                <input type="text" id="cliente" placeholder="Nombre del cliente" class="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none">
+                <input type="text" id="cliente" placeholder="Nombre del cliente" class="w-full border border-gray-300 p-2.5 rounded-lg outline-none">
             </div>
             
             <div>
                 <label class="block text-sm font-bold text-gray-700">🛠️ Actividad</label>
-                <select id="actividad" class="w-full border border-gray-300 p-2.5 rounded-lg bg-white focus:ring-2 focus:ring-orange-500 outline-none">
+                <select id="actividad" class="w-full border border-gray-300 p-2.5 rounded-lg bg-white outline-none">
                     <option value="Electricidad">Electricidad</option>
                     <option value="Aire Acondicionado">Aire Acondicionado</option>
                     <option value="Durlok">Durlok</option>
@@ -39,7 +39,7 @@
             
             <div>
                 <label class="block text-sm font-bold text-gray-700">📝 Tareas a realizar</label>
-                <textarea id="tareas" rows="3" placeholder="Descripción detallada..." class="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"></textarea>
+                <textarea id="tareas" rows="3" placeholder="Descripción detallada..." class="w-full border border-gray-300 p-2.5 rounded-lg outline-none"></textarea>
             </div>
 
             <div class="border-t pt-4">
@@ -47,17 +47,11 @@
                 <div class="grid grid-cols-2 gap-4 mb-4">
                     <div>
                         <label class="block text-sm font-bold text-gray-700">🏗️ Materiales</label>
-                        <select id="estadoMateriales" onchange="toggleMateriales()" class="w-full border border-gray-300 p-2.5 rounded-lg bg-white focus:ring-2 focus:ring-orange-500 outline-none">
-                            <option value="NO se contemplan">NO se contemplan</option>
-                            <option value="Incluidos">Incluidos</option>
-                        </select>
-                        <div id="contenedorCostoMat" class="hidden mt-2">
-                            <input type="number" id="costoMateriales" oninput="calcularTotal()" placeholder="Monto materiales $" class="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none">
-                        </div>
+                        <input type="number" id="costoMateriales" oninput="calcularTotal()" placeholder="$" class="w-full border border-gray-300 p-2.5 rounded-lg outline-none text-right">
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-700">👷 Mano de Obra</label>
-                        <input type="number" id="manoObra" oninput="calcularTotal()" placeholder="$" class="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none text-right">
+                        <input type="number" id="manoObra" oninput="calcularTotal()" placeholder="$" class="w-full border border-gray-300 p-2.5 rounded-lg outline-none text-right">
                     </div>
                 </div>
                 <div>
@@ -73,3 +67,87 @@
             </button>
         </div>
     </div>
+
+    <script>
+        // Suma automática de materiales y mano de obra
+        function calcularTotal() {
+            const materiales = parseFloat(document.getElementById('costoMateriales').value) || 0;
+            const manoObra = parseFloat(document.getElementById('manoObra').value) || 0;
+            const total = materiales + manoObra;
+            
+            document.getElementById('totalMostrado').innerText = `$ ${total.toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
+            return total;
+        }
+
+        function prepararPDF() {
+            const img = new Image();
+            img.src = 'mhe.png'; 
+            img.onload = () => generarPDF(img);
+            img.onerror = () => generarPDF(null);
+        }
+
+        function generarPDF(imgData) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            const v = {
+                fecha: document.getElementById('fecha').value,
+                num: document.getElementById('presupuestoNo').value,
+                cliente: document.getElementById('cliente').value,
+                actividad: document.getElementById('actividad').value,
+                tareas: document.getElementById('tareas').value,
+                costoMat: document.getElementById('costoMateriales').value || "0",
+                manoObra: document.getElementById('manoObra').value || "0",
+                total: calcularTotal()
+            };
+
+            // Logo y Encabezado
+            if (imgData) doc.addImage(imgData, 'PNG', 160, 10, 35, 35);
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(18);
+            doc.text("Presupuesto de Trabajo - MHE FULL SERVICES", 15, 25);
+            
+            doc.setDrawColor(255, 100, 0); 
+            doc.setLineWidth(1);
+            doc.line(15, 48, 195, 48);
+
+            // Información del Cliente
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "normal");
+            doc.text(`Fecha: ${v.fecha}`, 20, 60);
+            doc.text(`Presupuesto Nº: ${v.num}`, 20, 70);
+            doc.text(`Cliente: ${v.cliente}`, 20, 80);
+            doc.text(`Actividad: ${v.actividad}`, 20, 90);
+
+            // Tareas
+            doc.setFont("helvetica", "bold");
+            doc.text("TAREAS A REALIZAR:", 20, 105);
+            doc.setFont("helvetica", "normal");
+            const tareasDiv = doc.splitTextToSize(v.tareas || "---", 170);
+            doc.text(tareasDiv, 20, 112);
+
+            let yPos = 130 + (tareasDiv.length * 7);
+
+            // Detalle de Costos en PDF (Alineado a la derecha)
+            doc.setFont("helvetica", "bold");
+            doc.text("DETALLE DE COSTOS", 20, yPos);
+            doc.line(20, yPos + 2, 190, yPos + 2);
+            
+            doc.setFont("helvetica", "normal");
+            doc.text(`Materiales:`, 25, yPos + 10);
+            doc.text(`$ ${parseFloat(v.costoMat).toLocaleString()}`, 190, yPos + 10, { align: 'right' });
+            
+            doc.text(`Mano de Obra:`, 25, yPos + 18);
+            doc.text(`$ ${parseFloat(v.manoObra).toLocaleString()}`, 190, yPos + 18, { align: 'right' });
+
+            yPos += 35;
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(14);
+            doc.text(`TOTAL DEL TRABAJO A REALIZAR:`, 20, yPos);
+            doc.text(`$ ${v.total.toLocaleString()}`, 190, yPos, { align: 'right' });
+
+            doc.save(`Presupuesto_MHE_${v.num}.pdf`);
+        }
+    </script>
+</body>
+</html>

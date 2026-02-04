@@ -12,14 +12,15 @@
         <h1 class="text-2xl font-bold text-center text-slate-800 mb-6">Presupuesto de Trabajo - Servicios MHE</h1>
         
         <div class="space-y-4">
-            <div>
-                <label class="block text-sm font-bold text-gray-700">📅 Fecha</label>
-                <input type="date" id="fecha" class="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none">
-            </div>
-            
-            <div>
-                <label class="block text-sm font-bold text-gray-700">🔢 Presupuesto Nº</label>
-                <input type="text" id="presupuestoNo" placeholder="Ej: 001" class="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700">📅 Fecha</label>
+                    <input type="date" id="fecha" class="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700">🔢 Presupuesto Nº</label>
+                    <input type="text" id="presupuestoNo" placeholder="001" class="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none">
+                </div>
             </div>
 
             <div>
@@ -38,7 +39,28 @@
             
             <div>
                 <label class="block text-sm font-bold text-gray-700">📝 Tareas a realizar</label>
-                <textarea id="tareas" rows="5" placeholder="Describa el trabajo..." class="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"></textarea>
+                <textarea id="tareas" rows="3" placeholder="Descripción detallada..." class="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"></textarea>
+            </div>
+
+            <div class="border-t pt-4">
+                <h2 class="text-lg font-bold text-slate-700 mb-3">DETALLE DE COSTOS</h2>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700">🏗️ Materiales</label>
+                        <select id="materiales" class="w-full border border-gray-300 p-2.5 rounded-lg bg-white focus:ring-2 focus:ring-orange-500 outline-none">
+                            <option value="NO se contemplan">NO se contemplan</option>
+                            <option value="Incluidos">Incluidos</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700">👷 Mano de Obra</label>
+                        <input type="text" id="manoObra" placeholder="$" class="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none text-right">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700">💰 Total del trabajo a realizar</label>
+                    <input type="text" id="total" placeholder="$" class="w-full border border-gray-300 p-2.5 rounded-lg font-bold text-lg text-orange-600 focus:ring-2 focus:ring-orange-500 outline-none text-right">
+                </div>
             </div>
             
             <button onclick="prepararPDF()" class="w-full bg-orange-600 hover:bg-orange-700 text-white py-4 rounded-xl font-bold shadow-md transition-all transform active:scale-95">
@@ -50,37 +72,28 @@
     <script>
         function prepararPDF() {
             const img = new Image();
-            // Asegúrate de que el archivo mhe.png esté en la raíz de tu repo
             img.src = 'mhe.png'; 
-            
-            img.onload = function() {
-                generarPDF(img);
-            };
-
-            img.onerror = function() {
-                console.error("No se pudo cargar mhe.png. Generando sin logo.");
-                generarPDF(null);
-            };
+            img.onload = () => generarPDF(img);
+            img.onerror = () => generarPDF(null);
         }
 
         function generarPDF(imgData) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             
-            const fecha = document.getElementById('fecha').value;
-            const num = document.getElementById('presupuestoNo').value;
-            const cliente = document.getElementById('cliente').value;
-            const actividad = document.getElementById('actividad').value;
-            const tareas = document.getElementById('tareas').value;
+            const v = {
+                fecha: document.getElementById('fecha').value,
+                num: document.getElementById('presupuestoNo').value,
+                cliente: document.getElementById('cliente').value,
+                actividad: document.getElementById('actividad').value,
+                tareas: document.getElementById('tareas').value,
+                materiales: document.getElementById('materiales').value,
+                manoObra: document.getElementById('manoObra').value,
+                total: document.getElementById('total').value
+            };
 
-            // --- DISEÑO DEL PDF ---
-            
-            // Logo a la derecha (x=160)
-            if (imgData) {
-                doc.addImage(imgData, 'PNG', 160, 10, 35, 35);
-            }
-
-            // Título actualizado en el PDF
+            // Logo y Título
+            if (imgData) doc.addImage(imgData, 'PNG', 160, 10, 35, 35);
             doc.setFont("helvetica", "bold");
             doc.setFontSize(18);
             doc.text("Presupuesto de Trabajo - Servicios MHE", 15, 25);
@@ -89,36 +102,53 @@
             doc.setLineWidth(1);
             doc.line(15, 48, 195, 48);
 
-            // Bloque de Información
+            // Bloque de datos
             doc.setFontSize(12);
-            doc.text(`Fecha:`, 20, 60);
-            doc.text(`Presupuesto Nº:`, 20, 70);
-            doc.text(`Cliente:`, 20, 80);
-            doc.text(`Actividad:`, 20, 90);
+            doc.text(`Fecha: ${v.fecha || "---"}`, 20, 60);
+            doc.text(`Presupuesto Nº: ${v.num || "---"}`, 20, 70);
+            doc.text(`Cliente: ${v.cliente || "---"}`, 20, 80);
+            doc.text(`Actividad: ${v.actividad || "---"}`, 20, 90);
 
-            doc.setFont("helvetica", "normal");
-            doc.text(fecha || "---", 60, 60);
-            doc.text(num || "---", 60, 70);
-            doc.text(cliente || "---", 60, 80);
-            doc.text(actividad || "---", 60, 90);
-
+            // Tareas
             doc.setFont("helvetica", "bold");
             doc.text("TAREAS A REALIZAR:", 20, 105);
+            doc.setFont("helvetica", "normal");
+            const tareasDiv = doc.splitTextToSize(v.tareas || "---", 170);
+            doc.text(tareasDiv, 20, 112);
+
+            let yPos = 120 + (tareasDiv.length * 7);
+
+            // DETALLE DE COSTOS (Alineado)
+            doc.setFont("helvetica", "bold");
+            doc.text("DETALLE DE COSTOS", 20, yPos);
+            doc.setLineWidth(0.2);
+            doc.line(20, yPos + 2, 190, yPos + 2);
             
             doc.setFont("helvetica", "normal");
-            const tareasDivididas = doc.splitTextToSize(tareas || "---", 170);
-            doc.text(tareasDivididas, 20, 115);
+            doc.text(`Materiales:`, 25, yPos + 10);
+            doc.text(`${v.materiales}`, 190, yPos + 10, { align: 'right' });
+            
+            doc.text(`Mano de Obra:`, 25, yPos + 18);
+            doc.text(`${v.manoObra || "$ 0"}`, 190, yPos + 18, { align: 'right' });
 
-            // --- PIE DE PÁGINA (Leyendas legales) ---
+            yPos += 35;
+
+            // Total Final Destacado
+            doc.setDrawColor(200);
+            doc.line(15, yPos, 195, yPos);
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(14);
+            doc.text(`TOTAL DEL TRABAJO A REALIZAR:`, 20, yPos + 12);
+            doc.text(`${v.total || "$"}`, 190, yPos + 12, { align: 'right' });
+
+            // Pie de página
             doc.setFontSize(10);
             doc.setFont("helvetica", "italic");
             doc.setTextColor(100);
-            
             doc.text("Presupuesto valido por 10 días.", 105, 275, { align: 'center' });
             doc.text("Garantia del trabajo realizado por 3 meses.", 105, 282, { align: 'center' });
 
-            // Descarga automática
-            doc.save(`Presupuesto_MHE_${num || '000'}.pdf`);
+            doc.save(`Presupuesto_MHE_${v.num || '000'}.pdf`);
         }
     </script>
 </body>

@@ -33,7 +33,7 @@
                 <select id="actividad" class="w-full border border-gray-300 p-2.5 rounded-lg bg-white outline-none">
                     <option value="Electricidad">Electricidad</option>
                     <option value="HVAC (Heating Ventilation, and Air Conditioning)">HVAC (Heating Ventilation, and Air Conditioning)</option>
-                    <option value="Durlok">Durlok</option>
+                    <option value="Construcción en seco">Construcción en seco</option>
                 </select>
             </div>
             
@@ -100,11 +100,9 @@
                 total: calcularTotal()
             };
 
-            // Logo y Encabezado
             if (imgData) doc.addImage(imgData, 'PNG', 160, 10, 35, 35);
             doc.setFont("helvetica", "bold");
             doc.setFontSize(18);
-            // Cambio de título también en el PDF generado
             doc.text("PRESUPUESTO - MHE Full Services", 15, 25);
             
             doc.setDrawColor(255, 100, 0); 

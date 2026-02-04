@@ -3,62 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MHE - Presupuestos</title>
+    <title>MHE - Generador de Presupuestos</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body class="bg-slate-100 p-4">
-    <div class="max-w-xl mx-auto bg-white p-6 rounded-xl shadow-lg border-t-8 border-orange-500">
-        <h1 class="text-2xl font-bold text-center mb-6">Generador MHE</h1>
+    <div class="max-w-xl mx-auto bg-white p-8 rounded-xl shadow-lg border-t-8 border-orange-500">
+        <h1 class="text-3xl font-extrabold text-center text-slate-800 mb-2">MHE Servicios</h1>
+        <p class="text-center text-slate-500 mb-8">Panel de Generación de Presupuestos</p>
         
-        <div class="space-y-4">
-            <input type="date" id="fecha" class="w-full border p-2 rounded">
-            <input type="text" id="presupuestoNo" placeholder="Presupuesto Nº" class="w-full border p-2 rounded">
-            <input type="text" id="cliente" placeholder="Cliente" class="w-full border p-2 rounded">
+        <div class="grid grid-cols-1 gap-4">
+            <div>
+                <label class="block text-sm font-bold text-gray-700">Fecha</label>
+                <input type="date" id="fecha" class="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-orange-500">
+            </div>
             
-            <select id="actividad" class="w-full border p-2 rounded">
-                <option>Electricidad</option>
-                <option>Aire Acondicionado</option>
-                <option>Durlok</option>
-            </select>
+            <div>
+                <label class="block text-sm font-bold text-gray-700">Presupuesto Nº</label>
+                <input type="text" id="presupuestoNo" placeholder="Ej: 001" class="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-orange-500">
+            </div>
+
+            <div>
+                <label class="block text-sm font-bold text-gray-700">Cliente</label>
+                <input type="text" id="cliente" placeholder="Nombre del cliente" class="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-orange-500">
+            </div>
             
-            <textarea id="tareas" placeholder="Tareas a realizar" rows="4" class="w-full border p-2 rounded"></textarea>
+            <div>
+                <label class="block text-sm font-bold text-gray-700">Actividad</label>
+                <select id="actividad" class="w-full border border-gray-300 p-2.5 rounded-lg bg-white focus:ring-2 focus:ring-orange-500">
+                    <option value="Electricidad">Electricidad</option>
+                    <option value="Aire Acondicionado">Aire Acondicionado</option>
+                    <option value="Durlok">Durlok</option>
+                </select>
+            </div>
             
-            <button onclick="generar()" class="w-full bg-orange-600 text-white py-3 rounded-lg font-bold">
-                DESCARGAR PDF
+            <div>
+                <label class="block text-sm font-bold text-gray-700">Tareas a realizar</label>
+                <textarea id="tareas" rows="5" placeholder="Describa el trabajo..." class="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-orange-500"></textarea>
+            </div>
+            
+            <button onclick="generarPDF()" class="w-full bg-orange-600 hover:bg-orange-700 text-white py-4 rounded-xl font-bold shadow-md transition-all transform hover:-translate-y-1">
+                GENERAR Y DESCARGAR PDF
             </button>
         </div>
     </div>
 
     <script>
-        function generar() {
+        function generarPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             
-            // Datos del formulario
+            // 1. Captura de datos
             const fecha = document.getElementById('fecha').value;
             const num = document.getElementById('presupuestoNo').value;
             const cliente = document.getElementById('cliente').value;
             const actividad = document.getElementById('actividad').value;
             const tareas = document.getElementById('tareas').value;
 
-            // Diseño del PDF
-            doc.setFontSize(18);
-            doc.text("PRESUPUESTO MHE", 105, 20, { align: 'center' });
+            // 2. Encabezado
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(20);
+            doc.text("PRESUPUESTO DE TRABAJO", 105, 25, { align: 'center' });
             
+            doc.setLineWidth(0.5);
+            doc.line(15, 35, 195, 35);
+
+            // 3. Cuerpo del Presupuesto
             doc.setFontSize(12);
-            doc.text(`Fecha: ${fecha}`, 20, 40);
-            doc.text(`Presupuesto Nº: ${num}`, 20, 50);
-            doc.text(`Cliente: ${cliente}`, 20, 60);
-            doc.text(`Actividad: ${actividad}`, 20, 70);
+            doc.setFont("helvetica", "bold");
+            doc.text("Fecha:", 20, 50);
+            doc.text("Presupuesto Nº:", 20, 60);
+            doc.text("Cliente:", 20, 70);
+            doc.text("Actividad:", 20, 80);
+
+            doc.setFont("helvetica", "normal");
+            doc.text(fecha, 60, 50);
+            doc.text(num, 60, 60);
+            doc.text(cliente, 60, 70);
+            doc.text(actividad, 60, 80);
+
+            doc.setFont("helvetica", "bold");
+            doc.text("TAREAS A REALIZAR:", 20, 95);
             
-            doc.text("Tareas a realizar:", 20, 85);
-            doc.text(tareas, 20, 95, { maxWidth: 170 });
+            doc.setFont("helvetica", "normal");
+            const tareasDivididas = doc.splitTextToSize(tareas, 170);
+            doc.text(tareasDivididas, 20, 105);
 
+            // 4. LEYENDA ACTUALIZADA (Pie de página)
             doc.setFontSize(10);
-            doc.text("Validez: 10 días. Garantía: 3 meses.", 105, 280, { align: 'center' });
+            doc.setFont("helvetica", "italic");
+            doc.setTextColor(100);
+            
+            // Texto solicitado
+            const leyenda1 = "Presupuesto valido por 10 días.";
+            const leyenda2 = "Garantia del trabajo realizado por 3 meses.";
+            
+            doc.text(leyenda1, 105, 275, { align: 'center' });
+            doc.text(leyenda2, 105, 282, { align: 'center' });
 
-            doc.save(`Presupuesto_${num}.pdf`);
+            // 5. Descarga
+            doc.save(`Presupuesto_MHE_${num}.pdf`);
         }
     </script>
 </body>

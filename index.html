@@ -9,7 +9,7 @@
 </head>
 <body class="bg-slate-100 p-4">
     <div class="max-w-xl mx-auto bg-white p-8 rounded-xl shadow-lg border-t-8 border-orange-500">
-        <h1 class="text-2xl font-bold text-center text-slate-800 mb-6">Presupuestos realizados por MHE</h1>
+        <h1 class="text-2xl font-bold text-center text-slate-800 mb-6">Presupuesto de Trabajo - Servicios MHE</h1>
         
         <div class="space-y-4">
             <div>
@@ -38,7 +38,7 @@
             
             <div>
                 <label class="block text-sm font-bold text-gray-700">📝 Tareas a realizar</label>
-                <textarea id="tareas" rows="5" placeholder="Describa el trabajo detalladamente..." class="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"></textarea>
+                <textarea id="tareas" rows="5" placeholder="Describa el trabajo..." class="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"></textarea>
             </div>
             
             <button onclick="prepararPDF()" class="w-full bg-orange-600 hover:bg-orange-700 text-white py-4 rounded-xl font-bold shadow-md transition-all transform active:scale-95">
@@ -50,6 +50,7 @@
     <script>
         function prepararPDF() {
             const img = new Image();
+            // Asegúrate de que el archivo mhe.png esté en la raíz de tu repo
             img.src = 'mhe.png'; 
             
             img.onload = function() {
@@ -74,22 +75,21 @@
 
             // --- DISEÑO DEL PDF ---
             
-            // Logo posicionado a la derecha
-            // 165 es la coordenada X (cerca del borde derecho que es 210)
+            // Logo a la derecha (x=160)
             if (imgData) {
-                doc.addImage(imgData, 'PNG', 165, 10, 30, 30);
+                doc.addImage(imgData, 'PNG', 160, 10, 35, 35);
             }
 
-            // Título (centrado un poco más a la izquierda para dejar espacio al logo)
+            // Título actualizado en el PDF
             doc.setFont("helvetica", "bold");
-            doc.setFontSize(20);
-            doc.text("PRESUPUESTO DE TRABAJO", 90, 25, { align: 'center' });
+            doc.setFontSize(18);
+            doc.text("Presupuesto de Trabajo - Servicios MHE", 15, 25);
             
             doc.setDrawColor(255, 100, 0); 
             doc.setLineWidth(1);
-            doc.line(15, 45, 195, 45);
+            doc.line(15, 48, 195, 48);
 
-            // Información
+            // Bloque de Información
             doc.setFontSize(12);
             doc.text(`Fecha:`, 20, 60);
             doc.text(`Presupuesto Nº:`, 20, 70);
@@ -106,10 +106,10 @@
             doc.text("TAREAS A REALIZAR:", 20, 105);
             
             doc.setFont("helvetica", "normal");
-            const tareasDivididas = doc.splitTextToSize(tareas || "Sin tareas especificadas", 170);
+            const tareasDivididas = doc.splitTextToSize(tareas || "---", 170);
             doc.text(tareasDivididas, 20, 115);
 
-            // --- PIE DE PÁGINA ---
+            // --- PIE DE PÁGINA (Leyendas legales) ---
             doc.setFontSize(10);
             doc.setFont("helvetica", "italic");
             doc.setTextColor(100);
@@ -117,7 +117,8 @@
             doc.text("Presupuesto valido por 10 días.", 105, 275, { align: 'center' });
             doc.text("Garantia del trabajo realizado por 3 meses.", 105, 282, { align: 'center' });
 
-            doc.save(`Presupuesto_MHE_${num || 'sin_numero'}.pdf`);
+            // Descarga automática
+            doc.save(`Presupuesto_MHE_${num || '000'}.pdf`);
         }
     </script>
 </body>

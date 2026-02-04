@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MHE - Presupuestos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body class="bg-slate-100 p-4">
+    <div class="max-w-xl mx-auto bg-white p-6 rounded-xl shadow-lg border-t-8 border-orange-500">
+        <h1 class="text-2xl font-bold text-center mb-6">Generador MHE</h1>
+        
+        <div class="space-y-4">
+            <input type="date" id="fecha" class="w-full border p-2 rounded">
+            <input type="text" id="presupuestoNo" placeholder="Presupuesto Nº" class="w-full border p-2 rounded">
+            <input type="text" id="cliente" placeholder="Cliente" class="w-full border p-2 rounded">
+            
+            <select id="actividad" class="w-full border p-2 rounded">
+                <option>Electricidad</option>
+                <option>Aire Acondicionado</option>
+                <option>Durlok</option>
+            </select>
+            
+            <textarea id="tareas" placeholder="Tareas a realizar" rows="4" class="w-full border p-2 rounded"></textarea>
+            
+            <button onclick="generar()" class="w-full bg-orange-600 text-white py-3 rounded-lg font-bold">
+                DESCARGAR PDF
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function generar() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Datos del formulario
+            const fecha = document.getElementById('fecha').value;
+            const num = document.getElementById('presupuestoNo').value;
+            const cliente = document.getElementById('cliente').value;
+            const actividad = document.getElementById('actividad').value;
+            const tareas = document.getElementById('tareas').value;
+
+            // Diseño del PDF
+            doc.setFontSize(18);
+            doc.text("PRESUPUESTO MHE", 105, 20, { align: 'center' });
+            
+            doc.setFontSize(12);
+            doc.text(`Fecha: ${fecha}`, 20, 40);
+            doc.text(`Presupuesto Nº: ${num}`, 20, 50);
+            doc.text(`Cliente: ${cliente}`, 20, 60);
+            doc.text(`Actividad: ${actividad}`, 20, 70);
+            
+            doc.text("Tareas a realizar:", 20, 85);
+            doc.text(tareas, 20, 95, { maxWidth: 170 });
+
+            doc.setFontSize(10);
+            doc.text("Validez: 10 días. Garantía: 3 meses.", 105, 280, { align: 'center' });
+
+            doc.save(`Presupuesto_${num}.pdf`);
+        }
+    </script>
+</body>
+</html>

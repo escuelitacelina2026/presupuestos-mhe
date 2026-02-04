@@ -41,19 +41,34 @@
                 <textarea id="tareas" rows="5" placeholder="Describa el trabajo detalladamente..." class="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"></textarea>
             </div>
             
-            <button onclick="generarPDF()" class="w-full bg-orange-600 hover:bg-orange-700 text-white py-4 rounded-xl font-bold shadow-md transition-all transform active:scale-95">
+            <button onclick="prepararPDF()" class="w-full bg-orange-600 hover:bg-orange-700 text-white py-4 rounded-xl font-bold shadow-md transition-all transform active:scale-95">
                 📥 GENERAR Y DESCARGAR PDF
             </button>
         </div>
     </div>
 
     <script>
-        function generarPDF() {
-            // Inicializamos jsPDF
+        function prepararPDF() {
+            const img = new Image();
+            // Intentamos cargar el logo que está en tu repositorio
+            img.src = 'mhe.png'; 
+            
+            // Cuando la imagen termine de cargar, ejecutamos la creación del PDF
+            img.onload = function() {
+                generarPDF(img);
+            };
+
+            // Si la imagen no existe o falla, generamos el PDF sin logo para no trabar el proceso
+            img.onerror = function() {
+                console.error("No se pudo cargar mhe.png. Generando sin logo.");
+                generarPDF(null);
+            };
+        }
+
+        function generarPDF(imgData) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             
-            // Obtenemos los valores del formulario
             const fecha = document.getElementById('fecha').value;
             const num = document.getElementById('presupuestoNo').value;
             const cliente = document.getElementById('cliente').value;
@@ -62,51 +77,49 @@
 
             // --- DISEÑO DEL PDF ---
             
-            // Título
+            // Si el logo cargó bien, lo ponemos arriba a la izquierda
+            if (imgData) {
+                // Parámetros: imagen, formato, x, y, ancho, alto
+                doc.addImage(imgData, 'PNG', 15, 10, 30, 30);
+            }
+
+            // Título (movido un poco a la derecha para no chocar con el logo si es muy grande)
             doc.setFont("helvetica", "bold");
-            doc.setFontSize(22);
-            doc.text("PRESUPUESTO DE TRABAJO", 105, 25, { align: 'center' });
+            doc.setFontSize(20);
+            doc.text("PRESUPUESTO DE TRABAJO", 110, 25, { align: 'center' });
             
-            // Línea divisoria
-            doc.setDrawColor(255, 100, 0); // Color naranja
+            doc.setDrawColor(255, 100, 0); 
             doc.setLineWidth(1);
-            doc.line(15, 35, 195, 35);
+            doc.line(15, 45, 195, 45);
 
-            // Información del presupuesto
+            // Información
             doc.setFontSize(12);
-            doc.setTextColor(0, 0, 0);
-            
-            doc.text(`Fecha:`, 20, 50);
-            doc.text(`Presupuesto Nº:`, 20, 60);
-            doc.text(`Cliente:`, 20, 70);
-            doc.text(`Actividad:`, 20, 80);
+            doc.text(`Fecha:`, 20, 60);
+            doc.text(`Presupuesto Nº:`, 20, 70);
+            doc.text(`Cliente:`, 20, 80);
+            doc.text(`Actividad:`, 20, 90);
 
-            // Valores (fuente normal)
             doc.setFont("helvetica", "normal");
-            doc.text(fecha || "---", 60, 50);
-            doc.text(num || "---", 60, 60);
-            doc.text(cliente || "---", 60, 70);
-            doc.text(actividad || "---", 60, 80);
+            doc.text(fecha || "---", 60, 60);
+            doc.text(num || "---", 60, 70);
+            doc.text(cliente || "---", 60, 80);
+            doc.text(actividad || "---", 60, 90);
 
-            // Sección de tareas
             doc.setFont("helvetica", "bold");
-            doc.text("TAREAS A REALIZAR:", 20, 95);
+            doc.text("TAREAS A REALIZAR:", 20, 105);
             
             doc.setFont("helvetica", "normal");
-            // Ajuste automático de texto largo
             const tareasDivididas = doc.splitTextToSize(tareas || "Sin tareas especificadas", 170);
-            doc.text(tareasDivididas, 20, 105);
+            doc.text(tareasDivididas, 20, 115);
 
-            // --- PIE DE PÁGINA (Leyendas solicitadas) ---
+            // --- PIE DE PÁGINA ---
             doc.setFontSize(10);
             doc.setFont("helvetica", "italic");
-            doc.setTextColor(100); // Color gris
+            doc.setTextColor(100);
             
-            // Posicionamos al final de la hoja A4
             doc.text("Presupuesto valido por 10 días.", 105, 275, { align: 'center' });
             doc.text("Garantia del trabajo realizado por 3 meses.", 105, 282, { align: 'center' });
 
-            // Descarga del archivo
             doc.save(`Presupuesto_MHE_${num || 'sin_numero'}.pdf`);
         }
     </script>

@@ -3,34 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MHE - Generador de Presupuestos</title>
+    <title>MHE - Presupuestos</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body class="bg-slate-100 p-4">
     <div class="max-w-xl mx-auto bg-white p-8 rounded-xl shadow-lg border-t-8 border-orange-500">
-        <h1 class="text-3xl font-extrabold text-center text-slate-800 mb-2">MHE Servicios</h1>
-        <p class="text-center text-slate-500 mb-8">Panel de Generación de Presupuestos</p>
+        <h1 class="text-2xl font-bold text-center text-slate-800 mb-6">Presupuestos realizados por MHE</h1>
         
-        <div class="grid grid-cols-1 gap-4">
+        <div class="space-y-4">
             <div>
-                <label class="block text-sm font-bold text-gray-700">Fecha</label>
-                <input type="date" id="fecha" class="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-orange-500">
+                <label class="block text-sm font-bold text-gray-700">📅 Fecha</label>
+                <input type="date" id="fecha" class="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none">
             </div>
             
             <div>
-                <label class="block text-sm font-bold text-gray-700">Presupuesto Nº</label>
-                <input type="text" id="presupuestoNo" placeholder="Ej: 001" class="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-orange-500">
+                <label class="block text-sm font-bold text-gray-700">🔢 Presupuesto Nº</label>
+                <input type="text" id="presupuestoNo" placeholder="Ej: 001" class="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none">
             </div>
 
             <div>
-                <label class="block text-sm font-bold text-gray-700">Cliente</label>
-                <input type="text" id="cliente" placeholder="Nombre del cliente" class="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-orange-500">
+                <label class="block text-sm font-bold text-gray-700">👤 Cliente</label>
+                <input type="text" id="cliente" placeholder="Nombre del cliente" class="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none">
             </div>
             
             <div>
-                <label class="block text-sm font-bold text-gray-700">Actividad</label>
-                <select id="actividad" class="w-full border border-gray-300 p-2.5 rounded-lg bg-white focus:ring-2 focus:ring-orange-500">
+                <label class="block text-sm font-bold text-gray-700">🛠️ Actividad</label>
+                <select id="actividad" class="w-full border border-gray-300 p-2.5 rounded-lg bg-white focus:ring-2 focus:ring-orange-500 outline-none">
                     <option value="Electricidad">Electricidad</option>
                     <option value="Aire Acondicionado">Aire Acondicionado</option>
                     <option value="Durlok">Durlok</option>
@@ -38,71 +37,77 @@
             </div>
             
             <div>
-                <label class="block text-sm font-bold text-gray-700">Tareas a realizar</label>
-                <textarea id="tareas" rows="5" placeholder="Describa el trabajo..." class="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-orange-500"></textarea>
+                <label class="block text-sm font-bold text-gray-700">📝 Tareas a realizar</label>
+                <textarea id="tareas" rows="5" placeholder="Describa el trabajo detalladamente..." class="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"></textarea>
             </div>
             
-            <button onclick="generarPDF()" class="w-full bg-orange-600 hover:bg-orange-700 text-white py-4 rounded-xl font-bold shadow-md transition-all transform hover:-translate-y-1">
-                GENERAR Y DESCARGAR PDF
+            <button onclick="generarPDF()" class="w-full bg-orange-600 hover:bg-orange-700 text-white py-4 rounded-xl font-bold shadow-md transition-all transform active:scale-95">
+                📥 GENERAR Y DESCARGAR PDF
             </button>
         </div>
     </div>
 
     <script>
         function generarPDF() {
+            // Inicializamos jsPDF
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             
-            // 1. Captura de datos
+            // Obtenemos los valores del formulario
             const fecha = document.getElementById('fecha').value;
             const num = document.getElementById('presupuestoNo').value;
             const cliente = document.getElementById('cliente').value;
             const actividad = document.getElementById('actividad').value;
             const tareas = document.getElementById('tareas').value;
 
-            // 2. Encabezado
+            // --- DISEÑO DEL PDF ---
+            
+            // Título
             doc.setFont("helvetica", "bold");
-            doc.setFontSize(20);
+            doc.setFontSize(22);
             doc.text("PRESUPUESTO DE TRABAJO", 105, 25, { align: 'center' });
             
-            doc.setLineWidth(0.5);
+            // Línea divisoria
+            doc.setDrawColor(255, 100, 0); // Color naranja
+            doc.setLineWidth(1);
             doc.line(15, 35, 195, 35);
 
-            // 3. Cuerpo del Presupuesto
+            // Información del presupuesto
             doc.setFontSize(12);
-            doc.setFont("helvetica", "bold");
-            doc.text("Fecha:", 20, 50);
-            doc.text("Presupuesto Nº:", 20, 60);
-            doc.text("Cliente:", 20, 70);
-            doc.text("Actividad:", 20, 80);
+            doc.setTextColor(0, 0, 0);
+            
+            doc.text(`Fecha:`, 20, 50);
+            doc.text(`Presupuesto Nº:`, 20, 60);
+            doc.text(`Cliente:`, 20, 70);
+            doc.text(`Actividad:`, 20, 80);
 
+            // Valores (fuente normal)
             doc.setFont("helvetica", "normal");
-            doc.text(fecha, 60, 50);
-            doc.text(num, 60, 60);
-            doc.text(cliente, 60, 70);
-            doc.text(actividad, 60, 80);
+            doc.text(fecha || "---", 60, 50);
+            doc.text(num || "---", 60, 60);
+            doc.text(cliente || "---", 60, 70);
+            doc.text(actividad || "---", 60, 80);
 
+            // Sección de tareas
             doc.setFont("helvetica", "bold");
             doc.text("TAREAS A REALIZAR:", 20, 95);
             
             doc.setFont("helvetica", "normal");
-            const tareasDivididas = doc.splitTextToSize(tareas, 170);
+            // Ajuste automático de texto largo
+            const tareasDivididas = doc.splitTextToSize(tareas || "Sin tareas especificadas", 170);
             doc.text(tareasDivididas, 20, 105);
 
-            // 4. LEYENDA ACTUALIZADA (Pie de página)
+            // --- PIE DE PÁGINA (Leyendas solicitadas) ---
             doc.setFontSize(10);
             doc.setFont("helvetica", "italic");
-            doc.setTextColor(100);
+            doc.setTextColor(100); // Color gris
             
-            // Texto solicitado
-            const leyenda1 = "Presupuesto valido por 10 días.";
-            const leyenda2 = "Garantia del trabajo realizado por 3 meses.";
-            
-            doc.text(leyenda1, 105, 275, { align: 'center' });
-            doc.text(leyenda2, 105, 282, { align: 'center' });
+            // Posicionamos al final de la hoja A4
+            doc.text("Presupuesto valido por 10 días.", 105, 275, { align: 'center' });
+            doc.text("Garantia del trabajo realizado por 3 meses.", 105, 282, { align: 'center' });
 
-            // 5. Descarga
-            doc.save(`Presupuesto_MHE_${num}.pdf`);
+            // Descarga del archivo
+            doc.save(`Presupuesto_MHE_${num || 'sin_numero'}.pdf`);
         }
     </script>
 </body>

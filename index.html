@@ -9,7 +9,7 @@
 </head>
 <body class="bg-slate-100 p-4">
     <div class="max-w-xl mx-auto bg-white p-8 rounded-xl shadow-lg border-t-8 border-orange-500">
-        <h1 class="text-2xl font-bold text-center text-slate-800 mb-6">Presupuesto de Trabajo - MHE FULL SERVICES</h1>
+        <h1 class="text-2xl font-bold text-center text-slate-800 mb-6">PRESUPUESTO - MHE Full Services</h1>
         
         <div class="space-y-4">
             <div class="grid grid-cols-2 gap-4">
@@ -32,7 +32,7 @@
                 <label class="block text-sm font-bold text-gray-700">🛠️ Actividad</label>
                 <select id="actividad" class="w-full border border-gray-300 p-2.5 rounded-lg bg-white outline-none">
                     <option value="Electricidad">Electricidad</option>
-                    <option value="Aire Acondicionado">Aire Acondicionado</option>
+                    <option value="HVAC (Heating Ventilation, and Air Conditioning)">HVAC (Heating Ventilation, and Air Conditioning)</option>
                     <option value="Durlok">Durlok</option>
                 </select>
             </div>
@@ -69,7 +69,6 @@
     </div>
 
     <script>
-        // Suma automática de materiales y mano de obra
         function calcularTotal() {
             const materiales = parseFloat(document.getElementById('costoMateriales').value) || 0;
             const manoObra = parseFloat(document.getElementById('manoObra').value) || 0;
@@ -105,13 +104,13 @@
             if (imgData) doc.addImage(imgData, 'PNG', 160, 10, 35, 35);
             doc.setFont("helvetica", "bold");
             doc.setFontSize(18);
-            doc.text("Presupuesto de Trabajo - MHE FULL SERVICES", 15, 25);
+            // Cambio de título también en el PDF generado
+            doc.text("PRESUPUESTO - MHE Full Services", 15, 25);
             
             doc.setDrawColor(255, 100, 0); 
             doc.setLineWidth(1);
             doc.line(15, 48, 195, 48);
 
-            // Información del Cliente
             doc.setFontSize(12);
             doc.setFont("helvetica", "normal");
             doc.text(`Fecha: ${v.fecha}`, 20, 60);
@@ -119,7 +118,6 @@
             doc.text(`Cliente: ${v.cliente}`, 20, 80);
             doc.text(`Actividad: ${v.actividad}`, 20, 90);
 
-            // Tareas
             doc.setFont("helvetica", "bold");
             doc.text("TAREAS A REALIZAR:", 20, 105);
             doc.setFont("helvetica", "normal");
@@ -128,7 +126,6 @@
 
             let yPos = 130 + (tareasDiv.length * 7);
 
-            // Detalle de Costos en PDF (Alineado a la derecha)
             doc.setFont("helvetica", "bold");
             doc.text("DETALLE DE COSTOS", 20, yPos);
             doc.line(20, yPos + 2, 190, yPos + 2);

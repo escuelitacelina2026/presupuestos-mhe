@@ -50,15 +50,12 @@
     <script>
         function prepararPDF() {
             const img = new Image();
-            // Intentamos cargar el logo que está en tu repositorio
             img.src = 'mhe.png'; 
             
-            // Cuando la imagen termine de cargar, ejecutamos la creación del PDF
             img.onload = function() {
                 generarPDF(img);
             };
 
-            // Si la imagen no existe o falla, generamos el PDF sin logo para no trabar el proceso
             img.onerror = function() {
                 console.error("No se pudo cargar mhe.png. Generando sin logo.");
                 generarPDF(null);
@@ -77,16 +74,16 @@
 
             // --- DISEÑO DEL PDF ---
             
-            // Si el logo cargó bien, lo ponemos arriba a la izquierda
+            // Logo posicionado a la derecha
+            // 165 es la coordenada X (cerca del borde derecho que es 210)
             if (imgData) {
-                // Parámetros: imagen, formato, x, y, ancho, alto
-                doc.addImage(imgData, 'PNG', 15, 10, 30, 30);
+                doc.addImage(imgData, 'PNG', 165, 10, 30, 30);
             }
 
-            // Título (movido un poco a la derecha para no chocar con el logo si es muy grande)
+            // Título (centrado un poco más a la izquierda para dejar espacio al logo)
             doc.setFont("helvetica", "bold");
             doc.setFontSize(20);
-            doc.text("PRESUPUESTO DE TRABAJO", 110, 25, { align: 'center' });
+            doc.text("PRESUPUESTO DE TRABAJO", 90, 25, { align: 'center' });
             
             doc.setDrawColor(255, 100, 0); 
             doc.setLineWidth(1);

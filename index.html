@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MHE - Presupuestos</title>
+    <title>MHE FULL SERVICES - Presupuestos</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body class="bg-slate-100 p-4">
     <div class="max-w-xl mx-auto bg-white p-8 rounded-xl shadow-lg border-t-8 border-orange-500">
-        <h1 class="text-2xl font-bold text-center text-slate-800 mb-6">Presupuesto de Trabajo - Servicios MHE</h1>
+        <h1 class="text-2xl font-bold text-center text-slate-800 mb-6">Presupuesto de Trabajo - MHE FULL SERVICES</h1>
         
         <div class="space-y-4">
             <div class="grid grid-cols-2 gap-4">
@@ -47,19 +47,24 @@
                 <div class="grid grid-cols-2 gap-4 mb-4">
                     <div>
                         <label class="block text-sm font-bold text-gray-700">🏗️ Materiales</label>
-                        <select id="materiales" class="w-full border border-gray-300 p-2.5 rounded-lg bg-white focus:ring-2 focus:ring-orange-500 outline-none">
+                        <select id="estadoMateriales" onchange="toggleMateriales()" class="w-full border border-gray-300 p-2.5 rounded-lg bg-white focus:ring-2 focus:ring-orange-500 outline-none">
                             <option value="NO se contemplan">NO se contemplan</option>
                             <option value="Incluidos">Incluidos</option>
                         </select>
+                        <div id="contenedorCostoMat" class="hidden mt-2">
+                            <input type="number" id="costoMateriales" oninput="calcularTotal()" placeholder="Monto materiales $" class="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none">
+                        </div>
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-700">👷 Mano de Obra</label>
-                        <input type="text" id="manoObra" placeholder="$" class="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none text-right">
+                        <input type="number" id="manoObra" oninput="calcularTotal()" placeholder="$" class="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none text-right">
                     </div>
                 </div>
                 <div>
                     <label class="block text-sm font-bold text-gray-700">💰 Total del trabajo a realizar</label>
-                    <input type="text" id="total" placeholder="$" class="w-full border border-gray-300 p-2.5 rounded-lg font-bold text-lg text-orange-600 focus:ring-2 focus:ring-orange-500 outline-none text-right">
+                    <div id="totalMostrado" class="w-full border border-gray-300 p-2.5 rounded-lg font-bold text-lg text-orange-600 bg-gray-50 text-right">
+                        $ 0.00
+                    </div>
                 </div>
             </div>
             
@@ -68,88 +73,3 @@
             </button>
         </div>
     </div>
-
-    <script>
-        function prepararPDF() {
-            const img = new Image();
-            img.src = 'mhe.png'; 
-            img.onload = () => generarPDF(img);
-            img.onerror = () => generarPDF(null);
-        }
-
-        function generarPDF(imgData) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            const v = {
-                fecha: document.getElementById('fecha').value,
-                num: document.getElementById('presupuestoNo').value,
-                cliente: document.getElementById('cliente').value,
-                actividad: document.getElementById('actividad').value,
-                tareas: document.getElementById('tareas').value,
-                materiales: document.getElementById('materiales').value,
-                manoObra: document.getElementById('manoObra').value,
-                total: document.getElementById('total').value
-            };
-
-            // Logo y Título
-            if (imgData) doc.addImage(imgData, 'PNG', 160, 10, 35, 35);
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(18);
-            doc.text("Presupuesto de Trabajo - Servicios MHE", 15, 25);
-            
-            doc.setDrawColor(255, 100, 0); 
-            doc.setLineWidth(1);
-            doc.line(15, 48, 195, 48);
-
-            // Bloque de datos
-            doc.setFontSize(12);
-            doc.text(`Fecha: ${v.fecha || "---"}`, 20, 60);
-            doc.text(`Presupuesto Nº: ${v.num || "---"}`, 20, 70);
-            doc.text(`Cliente: ${v.cliente || "---"}`, 20, 80);
-            doc.text(`Actividad: ${v.actividad || "---"}`, 20, 90);
-
-            // Tareas
-            doc.setFont("helvetica", "bold");
-            doc.text("TAREAS A REALIZAR:", 20, 105);
-            doc.setFont("helvetica", "normal");
-            const tareasDiv = doc.splitTextToSize(v.tareas || "---", 170);
-            doc.text(tareasDiv, 20, 112);
-
-            let yPos = 120 + (tareasDiv.length * 7);
-
-            // DETALLE DE COSTOS (Alineado)
-            doc.setFont("helvetica", "bold");
-            doc.text("DETALLE DE COSTOS", 20, yPos);
-            doc.setLineWidth(0.2);
-            doc.line(20, yPos + 2, 190, yPos + 2);
-            
-            doc.setFont("helvetica", "normal");
-            doc.text(`Materiales:`, 25, yPos + 10);
-            doc.text(`${v.materiales}`, 190, yPos + 10, { align: 'right' });
-            
-            doc.text(`Mano de Obra:`, 25, yPos + 18);
-            doc.text(`${v.manoObra || "$ 0"}`, 190, yPos + 18, { align: 'right' });
-
-            yPos += 35;
-
-            // Total Final Destacado
-            doc.setDrawColor(200);
-            doc.line(15, yPos, 195, yPos);
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(14);
-            doc.text(`TOTAL DEL TRABAJO A REALIZAR:`, 20, yPos + 12);
-            doc.text(`${v.total || "$"}`, 190, yPos + 12, { align: 'right' });
-
-            // Pie de página
-            doc.setFontSize(10);
-            doc.setFont("helvetica", "italic");
-            doc.setTextColor(100);
-            doc.text("Presupuesto valido por 10 días.", 105, 275, { align: 'center' });
-            doc.text("Garantia del trabajo realizado por 3 meses.", 105, 282, { align: 'center' });
-
-            doc.save(`Presupuesto_MHE_${v.num || '000'}.pdf`);
-        }
-    </script>
-</body>
-</html>

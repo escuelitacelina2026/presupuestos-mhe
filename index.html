@@ -22,7 +22,7 @@
             
             <select id="actividad" class="border p-2 rounded w-full outline-none bg-white font-semibold">
                 <option value="Electricidad">Electricidad</option>
-                <option value="HVAC (Heating Ventilation, and Air Conditioning)">HVAC</option>
+                <option value="HVAC (Heating Ventilation, and Air Conditioning)">HVAC (Heating Ventilation, and Air Conditioning)</option>
                 <option value="Construcción en seco">Construcción en seco</option>
             </select>
             
@@ -99,81 +99,4 @@
             const img = new Image();
             img.crossOrigin = "Anonymous";
             img.src = 'mhe.png'; 
-            img.onload = function() { hacerPDF(img); };
-            img.onerror = function() { hacerPDF(null); };
-        }
-
-        function hacerPDF(logoImg) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            const total = calcularTotal();
-            const nro = document.getElementById('presupuestoNo').value || "001";
-
-            if (logoImg) {
-                try { doc.addImage(logoImg, 'PNG', 160, 10, 35, 35); } catch (e) {}
-            }
-
-            doc.setFont("helvetica", "bold").setFontSize(18);
-            doc.text("PRESUPUESTO - MHE Full Services", 15, 25);
-            doc.setDrawColor(255, 100, 0).setLineWidth(1).line(15, 48, 195, 48);
-
-            doc.setFontSize(11).setFont("helvetica", "normal");
-            doc.text("Fecha: " + (document.getElementById('fecha').value || "---"), 20, 60);
-            doc.text("Presupuesto N: " + nro, 20, 68);
-            doc.text("Cliente: " + (document.getElementById('cliente').value || "---"), 20, 76);
-            
-            // Ajuste para la Actividad (por si es larga como HVAC)
-            const actividadTexto = "Actividad: " + document.getElementById('actividad').value;
-            const actividadSplit = doc.splitTextToSize(actividadTexto, 160);
-            doc.text(actividadSplit, 20, 84);
-
-            let y = 84 + (actividadSplit.length * 7);
-            doc.setFont("helvetica", "bold").text("DETALLE DE TAREAS A REALIZAR:", 20, y);
-            doc.setFontSize(10).setFont("helvetica", "normal");
-            
-            y += 7;
-            for (let i = 1; i <= 5; i++) {
-                let d = document.getElementById('d' + i).value.trim();
-                let v = document.getElementById('v' + i).value;
-                if(d || v) {
-                    // splitTextToSize evita que el texto se encime con el valor
-                    const lineas = doc.splitTextToSize(i + ". " + (d || "Servicio técnico"), 145);
-                    doc.text(lineas, 25, y);
-                    // El valor siempre se mantiene a la derecha alineado con la primera linea
-                    doc.text("$ " + (parseFloat(v) || 0).toLocaleString('es-AR'), 185, y, {align: 'right'});
-                    
-                    y += (lineas.length * 6) + 2;
-                }
-            }
-
-            if(document.getElementById('incMat').value === "SI") {
-                y += 5;
-                doc.setFont("helvetica", "bold").text("MATERIALES INCLUIDOS:", 20, y);
-                doc.setFont("helvetica", "normal");
-                y += 7;
-                const matLineas = doc.splitTextToSize(document.getElementById('descMat').value || "Materiales varios", 145);
-                doc.text(matLineas, 25, y);
-                doc.text("$ " + (parseFloat(document.getElementById('valMat').value) || 0).toLocaleString('es-AR'), 185, y, {align: 'right'});
-                y += (matLineas.length * 6) + 5;
-            }
-
-            y = Math.max(y + 10, 160);
-            doc.setDrawColor(200).line(20, y, 190, y);
-            y += 10;
-            doc.setFontSize(14).setFont("helvetica", "bold");
-            doc.text("TOTAL DEL TRABAJO:", 20, y);
-            doc.text("$ " + total.toLocaleString('es-AR', {minimumFractionDigits: 2}), 185, y, {align: 'right'});
-
-            y += 20;
-            doc.setFontSize(9).setFont("helvetica", "bold");
-            doc.text("* Este presupuesto tiene una vigencia de 10 dias.", 20, y);
-            y += 7;
-            doc.text("* Se garantiza la calidad del servicio prestado por un periodo de 3 meses bajo", 20, y);
-            y += 5;
-            doc.text("  condiciones normales de uso.", 20, y);
-
-            doc.save("Presupuesto_MHE_" + nro + ".pdf");
-        }
-    </script>
-</body>
-</html>
+            img.onload = function() { hacerPDF(img);

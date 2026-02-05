@@ -7,64 +7,173 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
-<body class="bg-gray-100 p-4 md:p-10 font-sans">
+<body class="bg-gray-100 p-4">
 
-    <div class="max-w-2xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-200">
-        <div class="bg-orange-600 p-8 text-white text-center">
-            <h1 class="text-3xl font-black tracking-tighter">MHE FULL SERVICES</h1>
-            <p class="text-orange-100 opacity-80 text-sm font-bold uppercase tracking-widest">Presupuestos Profesionales</p>
-        </div>
-
-        <div class="p-8 space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="space-y-1">
-                    <label class="text-[10px] font-bold text-gray-400 uppercase ml-1">Fecha</label>
-                    <input type="date" id="fecha" class="w-full border-2 border-gray-50 p-3 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition-all">
-                </div>
-                <div class="space-y-1">
-                    <label class="text-[10px] font-bold text-gray-400 uppercase ml-1">Presupuesto Nº</label>
-                    <input type="text" id="presupuestoNo" placeholder="0001" class="w-full border-2 border-gray-50 p-3 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition-all">
-                </div>
+    <div class="max-w-xl mx-auto bg-white p-6 rounded-xl shadow-lg border-t-8 border-orange-500">
+        <h1 class="text-2xl font-bold text-center mb-6">PRESUPUESTO - MHE Full Services</h1>
+        
+        <div class="space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+                <input type="date" id="fecha" class="border p-2 rounded w-full outline-none">
+                <input type="text" id="presupuestoNo" placeholder="Presupuesto Nº" class="border p-2 rounded w-full outline-none">
             </div>
 
-            <div class="space-y-1">
-                <label class="text-[10px] font-bold text-gray-400 uppercase ml-1">Nombre del Cliente</label>
-                <input type="text" id="cliente" placeholder="Nombre completo" class="w-full border-2 border-gray-50 p-3 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition-all">
-            </div>
-
-            <div class="space-y-1">
-                <label class="text-[10px] font-bold text-gray-400 uppercase ml-1">Actividad / Rubro</label>
-                <select id="actividad" class="w-full border-2 border-gray-50 p-3 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none bg-white font-semibold text-gray-700">
-                    <option value="Electricidad">Electricidad</option>
-                    <option value="HVAC (Heating, Ventilation, and Air Conditioning)">HVAC (Heating, Ventilation, and Air Conditioning)</option>
-                    <option value="Construcción en seco">Construcción en seco</option>
-                </select>
-            </div>
-
-            <div class="border-t border-gray-100 pt-6">
-                <h3 class="text-gray-800 font-bold mb-4 flex items-center gap-2">
-                    <span class="w-2 h-6 bg-orange-500 rounded-full"></span>
-                    Tareas a Realizar
-                </h3>
-                <div id="contenedor-items" class="space-y-3">
+            <input type="text" id="cliente" placeholder="Nombre del Cliente" class="border p-2 rounded w-full outline-none">
+            
+            <select id="actividad" class="border p-2 rounded w-full outline-none bg-white font-semibold">
+                <option value="Electricidad">Electricidad</option>
+                <option value="HVAC (Heating Ventilation, and Air Conditioning)">HVAC</option>
+                <option value="Construcción en seco">Construcción en seco</option>
+            </select>
+            
+            <div class="border-t pt-4">
+                <p class="font-bold mb-2">Tareas a realizar:</p>
+                <div class="space-y-2">
+                    <div class="flex gap-2">
+                        <textarea id="d1" placeholder="Tarea 1" class="flex-1 border p-2 rounded text-sm outline-none resize-none" rows="1"></textarea>
+                        <input type="number" id="v1" oninput="calcularTotal()" placeholder="$" class="w-24 border p-2 rounded text-sm text-right item-valor h-10">
                     </div>
+                    <div class="flex gap-2">
+                        <textarea id="d2" placeholder="Tarea 2" class="flex-1 border p-2 rounded text-sm outline-none resize-none" rows="1"></textarea>
+                        <input type="number" id="v2" oninput="calcularTotal()" placeholder="$" class="w-24 border p-2 rounded text-sm text-right item-valor h-10">
+                    </div>
+                    <div class="flex gap-2">
+                        <textarea id="d3" placeholder="Tarea 3" class="flex-1 border p-2 rounded text-sm outline-none resize-none" rows="1"></textarea>
+                        <input type="number" id="v3" oninput="calcularTotal()" placeholder="$" class="w-24 border p-2 rounded text-sm text-right item-valor h-10">
+                    </div>
+                    <div class="flex gap-2">
+                        <textarea id="d4" placeholder="Tarea 4" class="flex-1 border p-2 rounded text-sm outline-none resize-none" rows="1"></textarea>
+                        <input type="number" id="v4" oninput="calcularTotal()" placeholder="$" class="w-24 border p-2 rounded text-sm text-right item-valor h-10">
+                    </div>
+                    <div class="flex gap-2">
+                        <textarea id="d5" placeholder="Tarea 5" class="flex-1 border p-2 rounded text-sm outline-none resize-none" rows="1"></textarea>
+                        <input type="number" id="v5" oninput="calcularTotal()" placeholder="$" class="w-24 border p-2 rounded text-sm text-right item-valor h-10">
+                    </div>
+                </div>
             </div>
 
-            <div class="bg-gray-50 rounded-2xl p-5 border border-gray-200">
-                <div class="flex justify-between items-center">
-                    <span class="font-bold text-gray-700">¿Incluye Materiales?</span>
-                    <select id="incMat" onchange="toggleMateriales()" class="bg-white border border-gray-300 p-2 rounded-lg font-bold text-orange-600 outline-none">
+            <div class="bg-orange-50 p-4 rounded border border-orange-200">
+                <div class="flex justify-between items-center mb-2">
+                    <label class="font-bold">¿Incluye Materiales?</label>
+                    <select id="incMat" onchange="verMat()" class="border p-1 rounded bg-white font-bold">
                         <option value="NO">NO</option>
                         <option value="SI">SI</option>
                     </select>
                 </div>
-                <div id="seccionMat" class="hidden mt-4 pt-4 border-t border-gray-200 space-y-3">
-                    <textarea id="descMat" placeholder="Describa los materiales incluidos..." class="w-full border-2 border-gray-100 rounded-xl p-3 text-sm resize-none h-20 outline-none focus:border-orange-400" rows="2"></textarea>
-                    <input type="number" id="valMat" oninput="calcularTotal()" placeholder="$ Valor de Materiales" class="w-full border-2 border-gray-100 p-3 rounded-xl text-right font-bold text-orange-600 outline-none focus:border-orange-400">
+                <div id="cajaMat" class="hidden space-y-2 pt-2 border-t border-orange-200">
+                    <textarea id="descMat" placeholder="Descripción de materiales" class="w-full border p-2 rounded text-sm bg-white outline-none resize-none" rows="2"></textarea>
+                    <input type="number" id="valMat" oninput="calcularTotal()" placeholder="$ Valor Materiales" class="w-full border p-2 rounded text-sm text-right bg-white outline-none">
                 </div>
             </div>
 
-            <div class="flex justify-between items-end pt-4">
-                <div>
-                    <p class="text-[10px] font-black text-gray-400 uppercase">Total Estimado</p>
-                    <p id="txtTotal" class="text-4xl font-black text-gray-800">$ 0,00</
+            <div class="text-right p-4 bg-orange-100 rounded border border-orange-300">
+                <span class="font-bold text-gray-700">TOTAL ESTIMADO: </span>
+                <span id="txtTotal" class="text-2xl font-bold text-orange-600">$ 0,00</span>
+            </div>
+            
+            <button onclick="prepararPDF()" class="w-full bg-orange-600 text-white py-4 rounded-xl font-bold shadow-lg hover:bg-orange-700 transition-all transform active:scale-95">
+                📥 GENERAR Y DESCARGAR PDF
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function verMat() {
+            const si = document.getElementById('incMat').value === "SI";
+            document.getElementById('cajaMat').style.display = si ? 'block' : 'none';
+            if(!si) { document.getElementById('valMat').value = ""; }
+            calcularTotal();
+        }
+
+        function calcularTotal() {
+            let t = 0;
+            document.querySelectorAll('.item-valor').forEach(i => { t += parseFloat(i.value) || 0; });
+            if(document.getElementById('incMat').value === "SI") {
+                t += parseFloat(document.getElementById('valMat').value) || 0;
+            }
+            document.getElementById('txtTotal').innerText = "$ " + t.toLocaleString('es-AR', {minimumFractionDigits: 2});
+            return t;
+        }
+
+        function prepararPDF() {
+            const img = new Image();
+            img.crossOrigin = "Anonymous";
+            img.src = 'mhe.png'; 
+            img.onload = function() { hacerPDF(img); };
+            img.onerror = function() { hacerPDF(null); };
+        }
+
+        function hacerPDF(logoImg) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const total = calcularTotal();
+            const nro = document.getElementById('presupuestoNo').value || "001";
+
+            if (logoImg) {
+                try { doc.addImage(logoImg, 'PNG', 160, 10, 35, 35); } catch (e) {}
+            }
+
+            doc.setFont("helvetica", "bold").setFontSize(18);
+            doc.text("PRESUPUESTO - MHE Full Services", 15, 25);
+            doc.setDrawColor(255, 100, 0).setLineWidth(1).line(15, 48, 195, 48);
+
+            doc.setFontSize(11).setFont("helvetica", "normal");
+            doc.text("Fecha: " + (document.getElementById('fecha').value || "---"), 20, 60);
+            doc.text("Presupuesto N: " + nro, 20, 68);
+            doc.text("Cliente: " + (document.getElementById('cliente').value || "---"), 20, 76);
+            
+            // Ajuste para la Actividad (por si es larga como HVAC)
+            const actividadTexto = "Actividad: " + document.getElementById('actividad').value;
+            const actividadSplit = doc.splitTextToSize(actividadTexto, 160);
+            doc.text(actividadSplit, 20, 84);
+
+            let y = 84 + (actividadSplit.length * 7);
+            doc.setFont("helvetica", "bold").text("DETALLE DE TAREAS A REALIZAR:", 20, y);
+            doc.setFontSize(10).setFont("helvetica", "normal");
+            
+            y += 7;
+            for (let i = 1; i <= 5; i++) {
+                let d = document.getElementById('d' + i).value.trim();
+                let v = document.getElementById('v' + i).value;
+                if(d || v) {
+                    // splitTextToSize evita que el texto se encime con el valor
+                    const lineas = doc.splitTextToSize(i + ". " + (d || "Servicio técnico"), 145);
+                    doc.text(lineas, 25, y);
+                    // El valor siempre se mantiene a la derecha alineado con la primera linea
+                    doc.text("$ " + (parseFloat(v) || 0).toLocaleString('es-AR'), 185, y, {align: 'right'});
+                    
+                    y += (lineas.length * 6) + 2;
+                }
+            }
+
+            if(document.getElementById('incMat').value === "SI") {
+                y += 5;
+                doc.setFont("helvetica", "bold").text("MATERIALES INCLUIDOS:", 20, y);
+                doc.setFont("helvetica", "normal");
+                y += 7;
+                const matLineas = doc.splitTextToSize(document.getElementById('descMat').value || "Materiales varios", 145);
+                doc.text(matLineas, 25, y);
+                doc.text("$ " + (parseFloat(document.getElementById('valMat').value) || 0).toLocaleString('es-AR'), 185, y, {align: 'right'});
+                y += (matLineas.length * 6) + 5;
+            }
+
+            y = Math.max(y + 10, 160);
+            doc.setDrawColor(200).line(20, y, 190, y);
+            y += 10;
+            doc.setFontSize(14).setFont("helvetica", "bold");
+            doc.text("TOTAL DEL TRABAJO:", 20, y);
+            doc.text("$ " + total.toLocaleString('es-AR', {minimumFractionDigits: 2}), 185, y, {align: 'right'});
+
+            y += 20;
+            doc.setFontSize(9).setFont("helvetica", "bold");
+            doc.text("* Este presupuesto tiene una vigencia de 10 dias.", 20, y);
+            y += 7;
+            doc.text("* Se garantiza la calidad del servicio prestado por un periodo de 3 meses bajo", 20, y);
+            y += 5;
+            doc.text("  condiciones normales de uso.", 20, y);
+
+            doc.save("Presupuesto_MHE_" + nro + ".pdf");
+        }
+    </script>
+</body>
+</html>

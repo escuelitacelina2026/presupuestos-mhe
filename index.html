@@ -41,7 +41,7 @@
             <div class="border-t pt-4">
                 <label class="block text-sm font-bold text-gray-700 mb-2">📝 Tareas a realizar</label>
                 <div class="space-y-2">
-                    <div class="flex gap-2 items-center"><span class="text-xs font-bold text-gray-400 w-10">Item 1</span><input type="text" id="tareaDesc1" placeholder="Descripción" class="flex-1 border border-gray-300 p-2 rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500"><input type="number" id="tareaVal1" oninput="calcularTotal()" placeholder="$" class="w-24 border border-gray-300 p-2 rounded-lg text-sm text-right valor-tarea"></div>
+                    <div class="flex gap-2 items-center"><span class="text-xs font-bold text-gray-400 w-10">Item 1</span><input type="text" id="tareaDesc1" placeholder="Descripción" class="flex-1 border border-gray-300 p-2 rounded-lg text-sm outline-none"><input type="number" id="tareaVal1" oninput="calcularTotal()" placeholder="$" class="w-24 border border-gray-300 p-2 rounded-lg text-sm text-right valor-tarea"></div>
                     <div class="flex gap-2 items-center"><span class="text-xs font-bold text-gray-400 w-10">Item 2</span><input type="text" id="tareaDesc2" placeholder="Descripción" class="flex-1 border border-gray-300 p-2 rounded-lg text-sm outline-none"><input type="number" id="tareaVal2" oninput="calcularTotal()" placeholder="$" class="w-24 border border-gray-300 p-2 rounded-lg text-sm text-right valor-tarea"></div>
                     <div class="flex gap-2 items-center"><span class="text-xs font-bold text-gray-400 w-10">Item 3</span><input type="text" id="tareaDesc3" placeholder="Descripción" class="flex-1 border border-gray-300 p-2 rounded-lg text-sm outline-none"><input type="number" id="tareaVal3" oninput="calcularTotal()" placeholder="$" class="w-24 border border-gray-300 p-2 rounded-lg text-sm text-right valor-tarea"></div>
                     <div class="flex gap-2 items-center"><span class="text-xs font-bold text-gray-400 w-10">Item 4</span><input type="text" id="tareaDesc4" placeholder="Descripción" class="flex-1 border border-gray-300 p-2 rounded-lg text-sm outline-none"><input type="number" id="tareaVal4" oninput="calcularTotal()" placeholder="$" class="w-24 border border-gray-300 p-2 rounded-lg text-sm text-right valor-tarea"></div>
@@ -73,7 +73,7 @@
                 </div>
             </div>
             
-            <button onclick="prepararPDF()" class="w-full bg-orange-600 hover:bg-orange-700 text-white py-4 rounded-xl font-bold shadow-md transition-all transform active:scale-95">
+            <button onclick="generarPDF()" class="w-full bg-orange-600 hover:bg-orange-700 text-white py-4 rounded-xl font-bold shadow-md transition-all transform active:scale-95">
                 📥 GENERAR Y DESCARGAR PDF
             </button>
         </div>
@@ -84,10 +84,24 @@
             const incluye = document.getElementById('incluyeMateriales').value;
             const divDetalle = document.getElementById('detalle-materiales');
             const inputValor = document.getElementById('costoMateriales');
-            if (incluye === "SI") { divDetalle.style.display = 'block'; } 
-            else { divDetalle.style.display = 'none'; inputValor.value = ""; calcularTotal(); }
+            divDetalle.style.display = (incluye === "SI") ? 'block' : 'none';
+            if (incluye === "NO") { inputValor.value = ""; calcularTotal(); }
         }
 
         function calcularTotal() {
             let total = 0;
-            document.querySelectorAll('.valor-tarea
+            document.querySelectorAll('.valor-tarea').forEach(t => { total += parseFloat(t.value) || 0; });
+            if (document.getElementById('incluyeMateriales').value === "SI") {
+                total += parseFloat(document.getElementById('costoMateriales').value) || 0;
+            }
+            document.getElementById('totalMostrado').innerText = `$ ${total.toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
+            return total;
+        }
+
+        async function generarPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const total = calcularTotal();
+            const num = document.getElementById('presupuestoNo').value || "001";
+
+            // Intentar cargar logo (op

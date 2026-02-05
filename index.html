@@ -8,7 +8,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body class="bg-slate-100 p-4">
-    <div class="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-lg border-t-8 border-orange-500">
+
+    <div class="max-w-xl mx-auto bg-white p-8 rounded-xl shadow-lg border-t-8 border-orange-500">
         <h1 class="text-2xl font-bold text-center text-slate-800 mb-6">PRESUPUESTO - MHE Full Services</h1>
         
         <div class="space-y-4">
@@ -25,7 +26,7 @@
 
             <div>
                 <label class="block text-sm font-bold text-gray-700">👤 Cliente</label>
-                <input type="text" id="cliente" placeholder="Nombre del cliente" class="w-full border border-gray-300 p-2.5 rounded-lg outline-none">
+                <input type="text" id="cliente" placeholder="Nombre del cliente" class="w-full border border-gray-300 p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-orange-500">
             </div>
             
             <div>
@@ -39,31 +40,62 @@
             
             <div class="border-t pt-4">
                 <label class="block text-sm font-bold text-gray-700 mb-2">📝 Tareas a realizar</label>
-                <div id="lista-tareas" class="space-y-2">
+                <div class="space-y-2">
+                    <div class="flex gap-2 items-center">
+                        <span class="text-xs font-bold text-gray-400 w-10">Item 1</span>
+                        <input type="text" id="tareaDesc1" placeholder="Descripción de la tarea" class="flex-1 border border-gray-300 p-2 rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500">
+                        <input type="number" id="tareaVal1" oninput="calcularTotal()" placeholder="$ Valor" class="w-24 border border-gray-300 p-2 rounded-lg text-sm text-right outline-none valor-tarea focus:ring-1 focus:ring-orange-500">
                     </div>
+                    <div class="flex gap-2 items-center">
+                        <span class="text-xs font-bold text-gray-400 w-10">Item 2</span>
+                        <input type="text" id="tareaDesc2" placeholder="Descripción" class="flex-1 border border-gray-300 p-2 rounded-lg text-sm outline-none">
+                        <input type="number" id="tareaVal2" oninput="calcularTotal()" placeholder="$ Valor" class="w-24 border border-gray-300 p-2 rounded-lg text-sm text-right outline-none valor-tarea">
+                    </div>
+                    <div class="flex gap-2 items-center">
+                        <span class="text-xs font-bold text-gray-400 w-10">Item 3</span>
+                        <input type="text" id="tareaDesc3" placeholder="Descripción" class="flex-1 border border-gray-300 p-2 rounded-lg text-sm outline-none">
+                        <input type="number" id="tareaVal3" oninput="calcularTotal()" placeholder="$ Valor" class="w-24 border border-gray-300 p-2 rounded-lg text-sm text-right outline-none valor-tarea">
+                    </div>
+                    <div class="flex gap-2 items-center">
+                        <span class="text-xs font-bold text-gray-400 w-10">Item 4</span>
+                        <input type="text" id="tareaDesc4" placeholder="Descripción" class="flex-1 border border-gray-300 p-2 rounded-lg text-sm outline-none">
+                        <input type="number" id="tareaVal4" oninput="calcularTotal()" placeholder="$ Valor" class="w-24 border border-gray-300 p-2 rounded-lg text-sm text-right outline-none valor-tarea">
+                    </div>
+                    <div class="flex gap-2 items-center">
+                        <span class="text-xs font-bold text-gray-400 w-10">Item 5</span>
+                        <input type="text" id="tareaDesc5" placeholder="Descripción" class="flex-1 border border-gray-300 p-2 rounded-lg text-sm outline-none">
+                        <input type="number" id="tareaVal5" oninput="calcularTotal()" placeholder="$ Valor" class="w-24 border border-gray-300 p-2 rounded-lg text-sm text-right outline-none valor-tarea">
+                    </div>
+                    <div class="flex gap-2 items-center">
+                        <span class="text-xs font-bold text-gray-400 w-10">Item 6</span>
+                        <input type="text" id="tareaDesc6" placeholder="Descripción" class="flex-1 border border-gray-300 p-2 rounded-lg text-sm outline-none">
+                        <input type="number" id="tareaVal6" oninput="calcularTotal()" placeholder="$ Valor" class="w-24 border border-gray-300 p-2 rounded-lg text-sm text-right outline-none valor-tarea">
+                    </div>
+                </div>
             </div>
 
-            <div class="border-t pt-4 bg-orange-50 p-4 rounded-lg">
-                <div class="flex items-center justify-between mb-2">
-                    <label class="block text-sm font-bold text-gray-700">🏗️ ¿Materiales incluidos?</label>
-                    <select id="incluyeMateriales" onchange="toggleMateriales()" class="border border-gray-300 p-1 rounded-lg outline-none">
+            <div class="border-t pt-4 bg-slate-50 p-4 rounded-lg border border-gray-200">
+                <div class="flex items-center justify-between mb-3">
+                    <label class="text-sm font-bold text-gray-700">🏗️ Materiales incluidos</label>
+                    <select id="incluyeMateriales" onchange="toggleMateriales()" class="border border-gray-300 p-1.5 rounded-lg outline-none bg-white font-bold cursor-pointer">
                         <option value="NO">NO</option>
                         <option value="SI">SI</option>
                     </select>
                 </div>
-                <div id="detalle-materiales" class="hidden space-y-2">
-                    <input type="text" id="descMateriales" placeholder="Descripción de materiales incluidos..." class="w-full border border-gray-300 p-2.5 rounded-lg outline-none">
-                    <div class="flex items-center gap-2">
-                        <span class="text-sm font-bold text-gray-600">Valor Materiales: $</span>
-                        <input type="number" id="costoMateriales" oninput="calcularTotal()" placeholder="0" class="w-full border border-gray-300 p-2.5 rounded-lg outline-none text-right">
+                
+                <div id="detalle-materiales" style="display: none;" class="space-y-2 pt-2 border-t border-dashed border-gray-300">
+                    <label class="block text-[10px] font-bold text-gray-500 uppercase italic">Detalle de materiales y costo</label>
+                    <div class="flex gap-2 items-center">
+                        <input type="text" id="descMateriales" placeholder="¿Qué materiales se incluyen?" class="flex-1 border border-gray-300 p-2 rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500 bg-white">
+                        <input type="number" id="costoMateriales" oninput="calcularTotal()" placeholder="$ Valor" class="w-24 border border-gray-300 p-2 rounded-lg text-sm text-right outline-none focus:ring-1 focus:ring-orange-500 bg-white">
                     </div>
                 </div>
             </div>
 
             <div class="border-t pt-4">
                 <label class="block text-sm font-bold text-gray-700">💰 Total del trabajo a realizar</label>
-                <div id="totalMostrado" class="w-full border border-gray-300 p-2.5 rounded-lg font-bold text-lg text-orange-600 bg-gray-50 text-right">
-                    $ 0.00
+                <div id="totalMostrado" class="w-full border border-gray-300 p-3 rounded-lg font-bold text-2xl text-orange-600 bg-orange-50 text-right shadow-inner">
+                    $ 0,00
                 </div>
             </div>
             
@@ -74,83 +106,117 @@
     </div>
 
     <script>
-        // Generar los 6 inputs de tareas al cargar
-        const listaTareas = document.getElementById('lista-tareas');
-        for (let i = 1; i <= 6; i++) {
-            listaTareas.innerHTML += `
-                <div class="flex gap-2 items-center">
-                    <span class="text-xs font-bold text-gray-400 w-12">Item ${i}</span>
-                    <input type="text" id="tareaDesc${i}" placeholder="Descripción" class="flex-1 border border-gray-300 p-2 rounded-lg text-sm outline-none">
-                    <input type="number" id="tareaVal${i}" oninput="calcularTotal()" placeholder="$ Valor" class="w-24 border border-gray-300 p-2 rounded-lg text-sm text-right outline-none valor-tarea">
-                </div>
-            `;
-        }
-
+        /**
+         * Lógica para mostrar/ocultar campos de materiales
+         */
         function toggleMateriales() {
             const incluye = document.getElementById('incluyeMateriales').value;
             const divDetalle = document.getElementById('detalle-materiales');
-            const costoMat = document.getElementById('costoMateriales');
-            
+            const inputValor = document.getElementById('costoMateriales');
+
             if (incluye === "SI") {
-                divDetalle.classList.remove('hidden');
+                divDetalle.style.display = 'block'; // Muestra la descripción y el valor
             } else {
-                divDetalle.classList.add('hidden');
-                costoMat.value = ""; // Limpiar valor si se oculta
+                divDetalle.style.display = 'none'; // Oculta los campos
+                inputValor.value = ""; // Resetea el valor para que no sume al total
                 calcularTotal();
             }
         }
 
+        /**
+         * Calcula el total sumando tareas y materiales (si aplica)
+         */
         function calcularTotal() {
             let total = 0;
             
-            // Sumar tareas
-            document.querySelectorAll('.valor-tarea').forEach(input => {
-                total += parseFloat(input.value) || 0;
+            // Sumar los 6 campos de tareas
+            const tareas = document.querySelectorAll('.valor-tarea');
+            tareas.forEach(t => {
+                total += parseFloat(t.value) || 0;
             });
 
-            // Sumar materiales si aplica
-            const costoMat = parseFloat(document.getElementById('costoMateriales').value) || 0;
-            total += costoMat;
+            // Sumar materiales si la opción es SI
+            const incluye = document.getElementById('incluyeMateriales').value;
+            if (incluye === "SI") {
+                const costoMat = parseFloat(document.getElementById('costoMateriales').value) || 0;
+                total += costoMat;
+            }
             
+            // Formatear moneda para el usuario
             document.getElementById('totalMostrado').innerText = `$ ${total.toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
             return total;
         }
 
+        /**
+         * Manejo del logo y generación del PDF
+         */
         function prepararPDF() {
             const img = new Image();
-            img.src = 'mhe.png'; 
+            img.src = 'mhe.png'; // Asegúrate que el logo esté en la misma carpeta
             img.onload = () => generarPDF(img);
-            img.onerror = () => generarPDF(null);
+            img.onerror = () => generarPDF(null); // Genera sin logo si no encuentra la imagen
         }
 
         function generarPDF(imgData) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            
             const total = calcularTotal();
-            const numPres = document.getElementById('presupuestoNo').value;
+            const num = document.getElementById('presupuestoNo').value;
 
+            // Encabezado
             if (imgData) doc.addImage(imgData, 'PNG', 160, 10, 35, 35);
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(18);
+            doc.setFont("helvetica", "bold").setFontSize(18);
             doc.text("PRESUPUESTO - MHE Full Services", 15, 25);
-            
-            doc.setDrawColor(255, 100, 0); 
-            doc.setLineWidth(1);
-            doc.line(15, 48, 195, 48);
+            doc.setDrawColor(255, 100, 0).setLineWidth(1).line(15, 48, 195, 48);
 
-            doc.setFontSize(11);
-            doc.setFont("helvetica", "normal");
-            doc.text(`Fecha: ${document.getElementById('fecha').value}`, 20, 58);
-            doc.text(`Presupuesto Nº: ${numPres}`, 20, 65);
-            doc.text(`Cliente: ${document.getElementById('cliente').value}`, 20, 72);
-            doc.text(`Actividad: ${document.getElementById('actividad').value}`, 20, 79);
+            // Datos Generales
+            doc.setFontSize(11).setFont("helvetica", "normal");
+            doc.text(`Fecha: ${document.getElementById('fecha').value}`, 20, 60);
+            doc.text(`Presupuesto Nº: ${num}`, 20, 68);
+            doc.text(`Cliente: ${document.getElementById('cliente').value}`, 20, 76);
+            doc.text(`Actividad: ${document.getElementById('actividad').value}`, 20, 84);
 
-            doc.setFont("helvetica", "bold");
-            doc.text("DETALLE DE TAREAS:", 20, 90);
+            // Título de tabla
+            doc.setFont("helvetica", "bold").text("DETALLE DE TAREAS A REALIZAR:", 20, 95);
             
-            let yPos = 97;
-            doc.setFontSize(10);
-            doc.setFont("helvetica", "normal");
+            let yPos = 102;
+            doc.setFontSize(10).setFont("helvetica", "normal");
             
-            //
+            // Iterar sobre los 6 campos
+            for (let i = 1; i <= 6; i++) {
+                const d = document.getElementById(`tareaDesc${i}`).value;
+                const v = document.getElementById(`tareaVal${i}`).value;
+                if(d || v) {
+                    doc.text(`${i}. ${d || 'S/D'}`, 25, yPos);
+                    doc.text(`$ ${parseFloat(v || 0).toLocaleString()}`, 185, yPos, {align: 'right'});
+                    yPos += 7;
+                }
+            }
+
+            // Si incluye materiales, agregarlos al PDF
+            if (document.getElementById('incluyeMateriales').value === "SI") {
+                yPos += 5;
+                doc.setFont("helvetica", "bold").text("MATERIALES INCLUIDOS:", 20, yPos);
+                yPos += 7;
+                doc.setFont("helvetica", "normal");
+                const descM = document.getElementById('descMateriales').value || "Materiales varios";
+                const costoM = document.getElementById('costoMateriales').value || 0;
+                doc.text(descM, 25, yPos);
+                doc.text(`$ ${parseFloat(costoM).toLocaleString()}`, 185, yPos, {align: 'right'});
+                yPos += 10;
+            }
+
+            // Total Final
+            yPos += 15;
+            doc.setDrawColor(200).line(20, yPos, 190, yPos);
+            yPos += 10;
+            doc.setFontSize(14).setFont("helvetica", "bold");
+            doc.text(`TOTAL DEL TRABAJO:`, 20, yPos);
+            doc.text(`$ ${total.toLocaleString('es-AR', {minimumFractionDigits: 2})}`, 185, yPos, { align: 'right' });
+
+            // Guardado
+            doc.save(`Presupuesto_MHE_${num}.pdf`);
+        }
+    </script>
+</body>
+</html>

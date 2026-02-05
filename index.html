@@ -56,7 +56,7 @@
                         <option value="SI">SI</option>
                     </select>
                 </div>
-                <div id="cajaMat" style="display: none;" class="space-y-2 pt-2 border-t border-orange-200">
+                <div id="cajaMat" class="hidden space-y-2 pt-2 border-t border-orange-200">
                     <textarea id="descMat" placeholder="Descripción de materiales" class="w-full border p-2 rounded text-sm bg-white outline-none resize-none" rows="2"></textarea>
                     <input type="number" id="valMat" oninput="calcularTotal()" placeholder="$ Valor Materiales" class="w-full border p-2 rounded text-sm text-right bg-white outline-none">
                 </div>
@@ -74,24 +74,30 @@
     </div>
 
     <script>
-        // Mostrar u ocultar materiales
         function verMat() {
-            const si = document.getElementById('incMat').value === "SI";
-            document.getElementById('cajaMat').style.display = si ? 'block' : 'none';
-            if(!si) { 
-                document.getElementById('valMat').value = ""; 
+            const seleccion = document.getElementById('incMat').value;
+            const caja = document.getElementById('cajaMat');
+            
+            if (seleccion === "SI") {
+                caja.classList.remove('hidden');
+            } else {
+                caja.classList.add('hidden');
+                document.getElementById('valMat').value = "";
                 document.getElementById('descMat').value = "";
             }
             calcularTotal();
         }
 
-        // Calcular total
         function calcularTotal() {
             let t = 0;
-            document.querySelectorAll('.item-valor').forEach(i => { t += parseFloat(i.value) || 0; });
+            document.querySelectorAll('.item-valor').forEach(i => { 
+                t += parseFloat(i.value) || 0; 
+            });
+            
             if(document.getElementById('incMat').value === "SI") {
                 t += parseFloat(document.getElementById('valMat').value) || 0;
             }
+            
             document.getElementById('txtTotal').innerText = "$ " + t.toLocaleString('es-AR', {minimumFractionDigits: 2});
             return t;
         }
@@ -99,71 +105,65 @@
         function prepararPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            
-            // Datos básicos
+
             const fecha = document.getElementById('fecha').value;
-            const num = document.getElementById('presupuestoNo').value;
+            const presupuestoNo = document.getElementById('presupuestoNo').value;
             const cliente = document.getElementById('cliente').value;
             const actividad = document.getElementById('actividad').value;
 
-            // Diseño del PDF
-            doc.setFillColor(249, 115, 22); // Naranja
+            // Cabecera
+            doc.setFillColor(234, 88, 12); // Naranja
             doc.rect(0, 0, 210, 20, 'F');
-            
             doc.setTextColor(255, 255, 255);
             doc.setFontSize(16);
             doc.text("MHE FULL SERVICES - PRESUPUESTO", 10, 13);
-            
+
+            // Información
             doc.setTextColor(0, 0, 0);
-            doc.setFontSize(10);
-            doc.text(`Fecha: ${fecha}`, 10, 30);
-            doc.text(`Presupuesto Nº: ${num}`, 150, 30);
-            doc.text(`Cliente: ${cliente}`, 10, 40);
-            doc.text(`Rubro: ${actividad}`, 10, 47);
+            doc.setFontSize(11);
+            doc.text("Fecha: " + fecha, 10, 30);
+            doc.text("Nº: " + presupuestoNo, 160, 30);
+            doc.text("Cliente: " + cliente, 10, 40);
+            doc.text("Rubro: " + actividad, 10, 48);
             
-            doc.line(10, 52, 200, 52);
+            doc.line(10, 55, 200, 55);
 
             // Tareas
+            let y = 65;
             doc.setFont("helvetica", "bold");
-            doc.text("DESCRIPCIÓN DE TAREAS", 10, 60);
+            doc.text("DESCRIPCIÓN DE TAREAS", 10, y);
             doc.setFont("helvetica", "normal");
-            
-            let y = 68;
+            y += 10;
+
             for(let i=1; i<=4; i++) {
-                const desc = document.getElementById('d'+i).value;
-                const valor = document.getElementById('v'+i).value;
-                if(desc) {
-                    doc.text(desc, 10, y, { maxWidth: 150 });
-                    doc.text(`$ ${parseFloat(valor || 0).toLocaleString('es-AR')}`, 170, y);
+                const d = document.getElementById('d'+i).value;
+                const v = document.getElementById('v'+i).value;
+                if(d) {
+                    doc.text(d, 10, y);
+                    doc.text("$ " + (parseFloat(v) || 0).toLocaleString('es-AR'), 170, y);
                     y += 10;
                 }
             }
 
-            // Materiales si existen
+            // Materiales
             if(document.getElementById('incMat').value === "SI") {
-                doc.setDrawColor(200, 200, 200);
-                doc.line(10, y, 200, y);
-                y += 7;
+                y += 5;
                 doc.setFont("helvetica", "bold");
-                doc.text("MATERIALES INCLUIDOS:", 10, y);
+                doc.text("MATERIALES:", 10, y);
                 doc.setFont("helvetica", "normal");
-                y += 7;
-                const dMat = document.getElementById('descMat').value;
-                const vMat = document.getElementById('valMat').value;
-                doc.text(dMat, 10, y, { maxWidth: 150 });
-                doc.text(`$ ${parseFloat(vMat || 0).toLocaleString('es-AR')}`, 170, y);
+                y += 8;
+                doc.text(document.getElementById('descMat').value, 10, y, { maxWidth: 140 });
+                doc.text("$ " + (parseFloat(document.getElementById('valMat').value) || 0).toLocaleString('es-AR'), 170, y);
                 y += 15;
             }
 
-            // Total Final
+            // Total
             y += 10;
-            doc.setFillColor(240, 240, 240);
-            doc.rect(140, y-7, 60, 12, 'F');
-            doc.setFontSize(12);
+            doc.setFontSize(14);
             doc.setFont("helvetica", "bold");
-            doc.text(`TOTAL: ${document.getElementById('txtTotal').innerText}`, 145, y);
+            doc.text("TOTAL ESTIMADO: " + document.getElementById('txtTotal').innerText, 120, y);
 
-            doc.save(`Presupuesto_${cliente}_${num}.pdf`);
+            doc.save("Presupuesto_" + cliente + ".pdf");
         }
     </script>
 </body>

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -20,36 +21,36 @@
 
             <input type="text" id="cliente" placeholder="Nombre del Cliente" class="border p-2 rounded w-full outline-none">
             
-            <select id="actividad" class="border p-2 rounded w-full outline-none bg-white">
+            <select id="actividad" class="border p-2 rounded w-full outline-none bg-white font-semibold">
                 <option value="Electricidad">Electricidad</option>
-                <option value="HVAC (Calefacción y Aire)">HVAC</option>
+                <option value="HVAC (Heating Ventilation, and Air Conditioning)">HVAC</option>
                 <option value="Construcción en seco">Construcción en seco</option>
             </select>
             
             <div class="border-t pt-4">
-                <p class="font-bold mb-2">Tareas:</p>
-                <div id="lista">
-                    <div class="flex gap-2 mb-2">
+                <p class="font-bold mb-2">Tareas a realizar:</p>
+                <div class="space-y-2">
+                    <div class="flex gap-2">
                         <input type="text" id="d1" placeholder="Tarea 1" class="flex-1 border p-2 rounded text-sm outline-none">
                         <input type="number" id="v1" oninput="calcularTotal()" placeholder="$" class="w-24 border p-2 rounded text-sm text-right item-valor">
                     </div>
-                    <div class="flex gap-2 mb-2">
+                    <div class="flex gap-2">
                         <input type="text" id="d2" placeholder="Tarea 2" class="flex-1 border p-2 rounded text-sm outline-none">
                         <input type="number" id="v2" oninput="calcularTotal()" placeholder="$" class="w-24 border p-2 rounded text-sm text-right item-valor">
                     </div>
-                    <div class="flex gap-2 mb-2">
+                    <div class="flex gap-2">
                         <input type="text" id="d3" placeholder="Tarea 3" class="flex-1 border p-2 rounded text-sm outline-none">
                         <input type="number" id="v3" oninput="calcularTotal()" placeholder="$" class="w-24 border p-2 rounded text-sm text-right item-valor">
                     </div>
-                    <div class="flex gap-2 mb-2">
+                    <div class="flex gap-2">
                         <input type="text" id="d4" placeholder="Tarea 4" class="flex-1 border p-2 rounded text-sm outline-none">
                         <input type="number" id="v4" oninput="calcularTotal()" placeholder="$" class="w-24 border p-2 rounded text-sm text-right item-valor">
                     </div>
-                    <div class="flex gap-2 mb-2">
+                    <div class="flex gap-2">
                         <input type="text" id="d5" placeholder="Tarea 5" class="flex-1 border p-2 rounded text-sm outline-none">
                         <input type="number" id="v5" oninput="calcularTotal()" placeholder="$" class="w-24 border p-2 rounded text-sm text-right item-valor">
                     </div>
-                    <div class="flex gap-2 mb-2">
+                    <div class="flex gap-2">
                         <input type="text" id="d6" placeholder="Tarea 6" class="flex-1 border p-2 rounded text-sm outline-none">
                         <input type="number" id="v6" oninput="calcularTotal()" placeholder="$" class="w-24 border p-2 rounded text-sm text-right item-valor">
                     </div>
@@ -59,24 +60,24 @@
             <div class="bg-orange-50 p-4 rounded border border-orange-200">
                 <div class="flex justify-between items-center mb-2">
                     <label class="font-bold">¿Incluye Materiales?</label>
-                    <select id="incMat" onchange="verMat()" class="border p-1 rounded bg-white">
+                    <select id="incMat" onchange="verMat()" class="border p-1 rounded bg-white font-bold">
                         <option value="NO">NO</option>
                         <option value="SI">SI</option>
                     </select>
                 </div>
-                <div id="cajaMat" class="hidden space-y-2">
-                    <input type="text" id="descMat" placeholder="¿Qué materiales?" class="w-full border p-2 rounded text-sm outline-none bg-white">
-                    <input type="number" id="valMat" oninput="calcularTotal()" placeholder="Costo materiales" class="w-full border p-2 rounded text-sm text-right outline-none bg-white">
+                <div id="cajaMat" class="hidden space-y-2 pt-2 border-t border-orange-200">
+                    <input type="text" id="descMat" placeholder="Descripción de materiales" class="w-full border p-2 rounded text-sm bg-white outline-none">
+                    <input type="number" id="valMat" oninput="calcularTotal()" placeholder="$ Valor Materiales" class="w-full border p-2 rounded text-sm text-right bg-white outline-none">
                 </div>
             </div>
 
-            <div class="text-right p-4 bg-gray-50 rounded border">
-                <span class="font-bold text-gray-600">TOTAL: </span>
+            <div class="text-right p-4 bg-orange-100 rounded border border-orange-300">
+                <span class="font-bold text-gray-700">TOTAL ESTIMADO: </span>
                 <span id="txtTotal" class="text-2xl font-bold text-orange-600">$ 0,00</span>
             </div>
             
-            <button onclick="hacerPDF()" class="w-full bg-orange-600 text-white py-4 rounded-xl font-bold hover:bg-orange-700">
-                GENERAR PDF
+            <button onclick="prepararPDF()" class="w-full bg-orange-600 text-white py-4 rounded-xl font-bold shadow-lg hover:bg-orange-700 transition-all transform active:scale-95">
+                📥 GENERAR Y DESCARGAR PDF
             </button>
         </div>
     </div>
@@ -99,69 +100,91 @@
             return t;
         }
 
-        function hacerPDF() {
-            try {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
-                const total = calcularTotal();
-                const nro = document.getElementById('presupuestoNo').value || "001";
+        // Esta función carga la imagen primero y luego dispara el PDF
+        function prepararPDF() {
+            const img = new Image();
+            img.src = 'mhe.png'; // Asegúrate de que el nombre sea exacto
+            img.onload = function() { hacerPDF(img); };
+            img.onerror = function() { hacerPDF(null); }; // Si no hay imagen, genera igual
+        }
 
-                // Título
-                doc.setFontSize(18);
-                doc.text("PRESUPUESTO - MHE Full Services", 15, 20);
-                doc.line(15, 25, 195, 25);
+        function hacerPDF(logoImg) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const total = calcularTotal();
+            const nro = document.getElementById('presupuestoNo').value || "001";
 
-                // Datos
-                doc.setFontSize(11);
-                doc.text("Fecha: " + document.getElementById('fecha').value, 20, 40);
-                doc.text("Presupuesto N: " + nro, 20, 47);
-                doc.text("Cliente: " + document.getElementById('cliente').value, 20, 54);
-                doc.text("Actividad: " + document.getElementById('actividad').value, 20, 61);
-
-                // Tareas
-                doc.setFont("helvetica", "bold");
-                doc.text("DETALLE DE TAREAS:", 20, 75);
-                doc.setFont("helvetica", "normal");
-                
-                let y = 82;
-                for (let i = 1; i <= 6; i++) {
-                    let d = document.getElementById('d' + i).value;
-                    let v = document.getElementById('v' + i).value;
-                    if(d || v) {
-                        doc.text(i + ". " + (d || "Servicio"), 25, y);
-                        doc.text("$ " + (parseFloat(v) || 0).toLocaleString(), 180, y, {align: 'right'});
-                        y += 7;
-                    }
-                }
-
-                // Materiales en PDF
-                if(document.getElementById('incMat').value === "SI") {
-                    y += 5;
-                    doc.setFont("helvetica", "bold");
-                    doc.text("MATERIALES INCLUIDOS:", 20, y);
-                    doc.setFont("helvetica", "normal");
-                    y += 7;
-                    doc.text(document.getElementById('descMat').value || "Varios", 25, y);
-                    doc.text("$ " + (parseFloat(document.getElementById('valMat').value) || 0).toLocaleString(), 180, y, {align: 'right'});
-                    y += 10;
-                }
-
-                // Total Final
-                y += 10;
-                doc.setFontSize(14);
-                doc.text("TOTAL: $ " + total.toLocaleString(), 180, y, {align: 'right'});
-
-                // LEYENDAS (Puestas con texto directo para evitar fallos)
-                y += 20;
-                doc.setFontSize(9);
-                doc.text("* Este presupuesto tiene una vigencia de 10 dias.", 20, y);
-                y += 7;
-                doc.text("* Se garantiza la calidad del servicio por 3 meses.", 20, y);
-
-                doc.save("Presupuesto_" + nro + ".pdf");
-            } catch (error) {
-                alert("Error al generar: " + error.message);
+            // Si la imagen cargó, la ponemos
+            if (logoImg) {
+                doc.addImage(logoImg, 'PNG', 160, 10, 35, 35);
             }
+
+            // Título Principal
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(18);
+            doc.text("PRESUPUESTO - MHE Full Services", 15, 25);
+            doc.setDrawColor(255, 100, 0);
+            doc.setLineWidth(1);
+            doc.line(15, 48, 195, 48);
+
+            // Datos
+            doc.setFontSize(11);
+            doc.setFont("helvetica", "normal");
+            doc.text("Fecha: " + (document.getElementById('fecha').value || "---"), 20, 60);
+            doc.text("Presupuesto N: " + nro, 20, 68);
+            doc.text("Cliente: " + (document.getElementById('cliente').value || "---"), 20, 76);
+            doc.text("Actividad: " + document.getElementById('actividad').value, 20, 84);
+
+            // Tareas
+            doc.setFont("helvetica", "bold");
+            doc.text("DETALLE DE TAREAS A REALIZAR:", 20, 95);
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(10);
+            
+            let y = 102;
+            for (let i = 1; i <= 6; i++) {
+                let d = document.getElementById('d' + i).value;
+                let v = document.getElementById('v' + i).value;
+                if(d || v) {
+                    doc.text(i + ". " + (d || "Servicio técnico"), 25, y);
+                    doc.text("$ " + (parseFloat(v) || 0).toLocaleString('es-AR'), 185, y, {align: 'right'});
+                    y += 7;
+                }
+            }
+
+            // Materiales
+            if(document.getElementById('incMat').value === "SI") {
+                y += 5;
+                doc.setFont("helvetica", "bold");
+                doc.text("MATERIALES INCLUIDOS:", 20, y);
+                doc.setFont("helvetica", "normal");
+                y += 7;
+                doc.text(document.getElementById('descMat').value || "Materiales varios", 25, y);
+                doc.text("$ " + (parseFloat(document.getElementById('valMat').value) || 0).toLocaleString('es-AR'), 185, y, {align: 'right'});
+                y += 10;
+            }
+
+            // Total
+            y += 15;
+            doc.setDrawColor(200);
+            doc.line(20, y, 190, y);
+            y += 10;
+            doc.setFontSize(14);
+            doc.setFont("helvetica", "bold");
+            doc.text("TOTAL DEL TRABAJO:", 20, y);
+            doc.text("$ " + total.toLocaleString('es-AR', {minimumFractionDigits: 2}), 185, y, {align: 'right'});
+
+            // LEYENDAS (Vigencia y Garantía)
+            y += 25;
+            doc.setFontSize(9);
+            doc.text("* Este presupuesto tiene una vigencia de 10 dias.", 20, y);
+            y += 7;
+            doc.text("* Se garantiza la calidad del servicio prestado por un periodo de 3 meses bajo", 20, y);
+            y += 5;
+            doc.text("  condiciones normales de uso.", 20, y);
+
+            // Guardar
+            doc.save("Presupuesto_MHE_" + nro + ".pdf");
         }
     </script>
 </body>

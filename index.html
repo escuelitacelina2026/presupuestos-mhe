@@ -8,7 +8,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body class="bg-slate-100 p-4">
-    <div class="max-w-xl mx-auto bg-white p-8 rounded-xl shadow-lg border-t-8 border-orange-500">
+    <div class="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-lg border-t-8 border-orange-500">
         <h1 class="text-2xl font-bold text-center text-slate-800 mb-6">PRESUPUESTO - MHE Full Services</h1>
         
         <div class="space-y-4">
@@ -37,28 +37,33 @@
                 </select>
             </div>
             
-            <div>
-                <label class="block text-sm font-bold text-gray-700">📝 Tareas a realizar</label>
-                <textarea id="tareas" rows="3" placeholder="Descripción detallada..." class="w-full border border-gray-300 p-2.5 rounded-lg outline-none"></textarea>
+            <div class="border-t pt-4">
+                <label class="block text-sm font-bold text-gray-700 mb-2">📝 Tareas a realizar</label>
+                <div id="lista-tareas" class="space-y-2">
+                    </div>
+            </div>
+
+            <div class="border-t pt-4 bg-orange-50 p-4 rounded-lg">
+                <div class="flex items-center justify-between mb-2">
+                    <label class="block text-sm font-bold text-gray-700">🏗️ ¿Materiales incluidos?</label>
+                    <select id="incluyeMateriales" onchange="toggleMateriales()" class="border border-gray-300 p-1 rounded-lg outline-none">
+                        <option value="NO">NO</option>
+                        <option value="SI">SI</option>
+                    </select>
+                </div>
+                <div id="detalle-materiales" class="hidden space-y-2">
+                    <input type="text" id="descMateriales" placeholder="Descripción de materiales incluidos..." class="w-full border border-gray-300 p-2.5 rounded-lg outline-none">
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm font-bold text-gray-600">Valor Materiales: $</span>
+                        <input type="number" id="costoMateriales" oninput="calcularTotal()" placeholder="0" class="w-full border border-gray-300 p-2.5 rounded-lg outline-none text-right">
+                    </div>
+                </div>
             </div>
 
             <div class="border-t pt-4">
-                <h2 class="text-lg font-bold text-slate-700 mb-3">DETALLE DE COSTOS</h2>
-                <div class="grid grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700">🏗️ Materiales</label>
-                        <input type="number" id="costoMateriales" oninput="calcularTotal()" placeholder="$" class="w-full border border-gray-300 p-2.5 rounded-lg outline-none text-right">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700">👷 Mano de Obra</label>
-                        <input type="number" id="manoObra" oninput="calcularTotal()" placeholder="$" class="w-full border border-gray-300 p-2.5 rounded-lg outline-none text-right">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-sm font-bold text-gray-700">💰 Total del trabajo a realizar</label>
-                    <div id="totalMostrado" class="w-full border border-gray-300 p-2.5 rounded-lg font-bold text-lg text-orange-600 bg-gray-50 text-right">
-                        $ 0.00
-                    </div>
+                <label class="block text-sm font-bold text-gray-700">💰 Total del trabajo a realizar</label>
+                <div id="totalMostrado" class="w-full border border-gray-300 p-2.5 rounded-lg font-bold text-lg text-orange-600 bg-gray-50 text-right">
+                    $ 0.00
                 </div>
             </div>
             
@@ -69,10 +74,43 @@
     </div>
 
     <script>
+        // Generar los 6 inputs de tareas al cargar
+        const listaTareas = document.getElementById('lista-tareas');
+        for (let i = 1; i <= 6; i++) {
+            listaTareas.innerHTML += `
+                <div class="flex gap-2 items-center">
+                    <span class="text-xs font-bold text-gray-400 w-12">Item ${i}</span>
+                    <input type="text" id="tareaDesc${i}" placeholder="Descripción" class="flex-1 border border-gray-300 p-2 rounded-lg text-sm outline-none">
+                    <input type="number" id="tareaVal${i}" oninput="calcularTotal()" placeholder="$ Valor" class="w-24 border border-gray-300 p-2 rounded-lg text-sm text-right outline-none valor-tarea">
+                </div>
+            `;
+        }
+
+        function toggleMateriales() {
+            const incluye = document.getElementById('incluyeMateriales').value;
+            const divDetalle = document.getElementById('detalle-materiales');
+            const costoMat = document.getElementById('costoMateriales');
+            
+            if (incluye === "SI") {
+                divDetalle.classList.remove('hidden');
+            } else {
+                divDetalle.classList.add('hidden');
+                costoMat.value = ""; // Limpiar valor si se oculta
+                calcularTotal();
+            }
+        }
+
         function calcularTotal() {
-            const materiales = parseFloat(document.getElementById('costoMateriales').value) || 0;
-            const manoObra = parseFloat(document.getElementById('manoObra').value) || 0;
-            const total = materiales + manoObra;
+            let total = 0;
+            
+            // Sumar tareas
+            document.querySelectorAll('.valor-tarea').forEach(input => {
+                total += parseFloat(input.value) || 0;
+            });
+
+            // Sumar materiales si aplica
+            const costoMat = parseFloat(document.getElementById('costoMateriales').value) || 0;
+            total += costoMat;
             
             document.getElementById('totalMostrado').innerText = `$ ${total.toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
             return total;
@@ -89,16 +127,8 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             
-            const v = {
-                fecha: document.getElementById('fecha').value,
-                num: document.getElementById('presupuestoNo').value,
-                cliente: document.getElementById('cliente').value,
-                actividad: document.getElementById('actividad').value,
-                tareas: document.getElementById('tareas').value,
-                costoMat: document.getElementById('costoMateriales').value || "0",
-                manoObra: document.getElementById('manoObra').value || "0",
-                total: calcularTotal()
-            };
+            const total = calcularTotal();
+            const numPres = document.getElementById('presupuestoNo').value;
 
             if (imgData) doc.addImage(imgData, 'PNG', 160, 10, 35, 35);
             doc.setFont("helvetica", "bold");
@@ -109,40 +139,18 @@
             doc.setLineWidth(1);
             doc.line(15, 48, 195, 48);
 
-            doc.setFontSize(12);
+            doc.setFontSize(11);
             doc.setFont("helvetica", "normal");
-            doc.text(`Fecha: ${v.fecha}`, 20, 60);
-            doc.text(`Presupuesto Nº: ${v.num}`, 20, 70);
-            doc.text(`Cliente: ${v.cliente}`, 20, 80);
-            doc.text(`Actividad: ${v.actividad}`, 20, 90);
+            doc.text(`Fecha: ${document.getElementById('fecha').value}`, 20, 58);
+            doc.text(`Presupuesto Nº: ${numPres}`, 20, 65);
+            doc.text(`Cliente: ${document.getElementById('cliente').value}`, 20, 72);
+            doc.text(`Actividad: ${document.getElementById('actividad').value}`, 20, 79);
 
             doc.setFont("helvetica", "bold");
-            doc.text("TAREAS A REALIZAR:", 20, 105);
-            doc.setFont("helvetica", "normal");
-            const tareasDiv = doc.splitTextToSize(v.tareas || "---", 170);
-            doc.text(tareasDiv, 20, 112);
-
-            let yPos = 130 + (tareasDiv.length * 7);
-
-            doc.setFont("helvetica", "bold");
-            doc.text("DETALLE DE COSTOS", 20, yPos);
-            doc.line(20, yPos + 2, 190, yPos + 2);
+            doc.text("DETALLE DE TAREAS:", 20, 90);
             
+            let yPos = 97;
+            doc.setFontSize(10);
             doc.setFont("helvetica", "normal");
-            doc.text(`Materiales:`, 25, yPos + 10);
-            doc.text(`$ ${parseFloat(v.costoMat).toLocaleString()}`, 190, yPos + 10, { align: 'right' });
             
-            doc.text(`Mano de Obra:`, 25, yPos + 18);
-            doc.text(`$ ${parseFloat(v.manoObra).toLocaleString()}`, 190, yPos + 18, { align: 'right' });
-
-            yPos += 35;
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(14);
-            doc.text(`TOTAL DEL TRABAJO A REALIZAR:`, 20, yPos);
-            doc.text(`$ ${v.total.toLocaleString()}`, 190, yPos, { align: 'right' });
-
-            doc.save(`Presupuesto_MHE_${v.num}.pdf`);
-        }
-    </script>
-</body>
-</html>
+            //

@@ -45,6 +45,10 @@
                         <textarea id="d4" placeholder="Tarea 4" class="flex-1 border p-2 rounded text-sm outline-none resize-none" rows="1"></textarea>
                         <input type="number" id="v4" oninput="calcularTotal()" placeholder="$" class="w-24 border p-2 rounded text-sm text-right item-valor h-10">
                     </div>
+                    <div class="flex gap-2">
+                        <textarea id="d5" placeholder="Tarea 5" class="flex-1 border p-2 rounded text-sm outline-none resize-none" rows="1"></textarea>
+                        <input type="number" id="v5" oninput="calcularTotal()" placeholder="$" class="w-24 border p-2 rounded text-sm text-right item-valor h-10">
+                    </div>
                 </div>
             </div>
 
@@ -75,10 +79,9 @@
 
     <script>
         function verMat() {
-            const seleccion = document.getElementById('incMat').value;
+            const si = document.getElementById('incMat').value === "SI";
             const caja = document.getElementById('cajaMat');
-            
-            if (seleccion === "SI") {
+            if(si) {
                 caja.classList.remove('hidden');
             } else {
                 caja.classList.add('hidden');
@@ -90,57 +93,72 @@
 
         function calcularTotal() {
             let t = 0;
-            document.querySelectorAll('.item-valor').forEach(i => { 
-                t += parseFloat(i.value) || 0; 
-            });
-            
+            document.querySelectorAll('.item-valor').forEach(i => { t += parseFloat(i.value) || 0; });
             if(document.getElementById('incMat').value === "SI") {
                 t += parseFloat(document.getElementById('valMat').value) || 0;
             }
-            
             document.getElementById('txtTotal').innerText = "$ " + t.toLocaleString('es-AR', {minimumFractionDigits: 2});
             return t;
         }
 
         function prepararPDF() {
+            const img = new Image();
+            img.crossOrigin = "Anonymous";
+            img.src = 'mhe.png'; // Asegúrate que el archivo esté en la misma carpeta
+            
+            img.onload = function() {
+                generarDocumento(img);
+            };
+            img.onerror = function() {
+                generarDocumento(null); // Si no hay logo, genera igual el PDF
+            };
+        }
+
+        function generarDocumento(imgLogo) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
 
+            // Encabezado Naranja
+            doc.setFillColor(234, 88, 12);
+            doc.rect(0, 0, 210, 40, 'F');
+
+            if(imgLogo) {
+                doc.addImage(imgLogo, 'PNG', 10, 5, 30, 30);
+            }
+
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(18);
+            doc.text("MHE FULL SERVICES", 50, 20);
+            doc.setFontSize(12);
+            doc.text("Presupuesto de Servicio", 50, 28);
+
+            // Datos del cliente y fecha
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
             const fecha = document.getElementById('fecha').value;
             const presupuestoNo = document.getElementById('presupuestoNo').value;
-            const cliente = document.getElementById('cliente').value;
-            const actividad = document.getElementById('actividad').value;
+            doc.text(`Fecha: ${fecha}`, 10, 50);
+            doc.text(`Presupuesto Nº: ${presupuestoNo}`, 150, 50);
+            doc.text(`Cliente: ${document.getElementById('cliente').value}`, 10, 58);
+            doc.text(`Rubro: ${document.getElementById('actividad').value}`, 10, 66);
 
-            // Cabecera
-            doc.setFillColor(234, 88, 12); // Naranja
-            doc.rect(0, 0, 210, 20, 'F');
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(16);
-            doc.text("MHE FULL SERVICES - PRESUPUESTO", 10, 13);
+            doc.setDrawColor(234, 88, 12);
+            doc.line(10, 72, 200, 72);
 
-            // Información
-            doc.setTextColor(0, 0, 0);
-            doc.setFontSize(11);
-            doc.text("Fecha: " + fecha, 10, 30);
-            doc.text("Nº: " + presupuestoNo, 160, 30);
-            doc.text("Cliente: " + cliente, 10, 40);
-            doc.text("Rubro: " + actividad, 10, 48);
-            
-            doc.line(10, 55, 200, 55);
-
-            // Tareas
-            let y = 65;
+            // Tabla de Tareas
+            let y = 82;
             doc.setFont("helvetica", "bold");
             doc.text("DESCRIPCIÓN DE TAREAS", 10, y);
+            doc.text("VALOR", 170, y);
             doc.setFont("helvetica", "normal");
             y += 10;
 
-            for(let i=1; i<=4; i++) {
+            for(let i=1; i<=5; i++) {
                 const d = document.getElementById('d'+i).value;
                 const v = document.getElementById('v'+i).value;
                 if(d) {
-                    doc.text(d, 10, y);
-                    doc.text("$ " + (parseFloat(v) || 0).toLocaleString('es-AR'), 170, y);
+                    doc.text(d, 10, y, {maxWidth: 150});
+                    doc.text(`$ ${parseFloat(v || 0).toLocaleString('es-AR')}`, 170, y);
                     y += 10;
                 }
             }
@@ -149,21 +167,31 @@
             if(document.getElementById('incMat').value === "SI") {
                 y += 5;
                 doc.setFont("helvetica", "bold");
-                doc.text("MATERIALES:", 10, y);
-                doc.setFont("helvetica", "normal");
+                doc.text("MATERIALES INCLUIDOS:", 10, y);
                 y += 8;
-                doc.text(document.getElementById('descMat').value, 10, y, { maxWidth: 140 });
-                doc.text("$ " + (parseFloat(document.getElementById('valMat').value) || 0).toLocaleString('es-AR'), 170, y);
+                doc.setFont("helvetica", "normal");
+                doc.text(document.getElementById('descMat').value, 10, y, {maxWidth: 150});
+                doc.text(`$ ${parseFloat(document.getElementById('valMat').value || 0).toLocaleString('es-AR')}`, 170, y);
                 y += 15;
             }
 
             // Total
             y += 10;
+            doc.setFillColor(245, 245, 245);
+            doc.rect(130, y-8, 70, 14, 'F');
             doc.setFontSize(14);
             doc.setFont("helvetica", "bold");
-            doc.text("TOTAL ESTIMADO: " + document.getElementById('txtTotal').innerText, 120, y);
+            doc.text(`TOTAL: ${document.getElementById('txtTotal').innerText}`, 135, y);
 
-            doc.save("Presupuesto_" + cliente + ".pdf");
+            // --- VALIDEZ DEL PRESUPUESTO ---
+            y += 25;
+            doc.setFontSize(9);
+            doc.setTextColor(100, 100, 100);
+            doc.setFont("helvetica", "italic");
+            doc.text("Este presupuesto tiene una validez de 10 días a partir de la fecha emitida.", 10, y);
+            doc.text("Precios sujetos a cambios según variación de costos de materiales.", 10, y + 5);
+
+            doc.save(`Presupuesto_${document.getElementById('presupuestoNo').value}.pdf`);
         }
     </script>
 </body>

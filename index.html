@@ -41,12 +41,53 @@
             <div class="border-t pt-4">
                 <label class="block text-sm font-bold text-gray-700 mb-2">📝 Tareas a realizar</label>
                 <div class="space-y-2">
+                    <div class="flex gap-2 items-center"><span class="text-xs font-bold text-gray-400 w-10">Item 1</span><input type="text" id="tareaDesc1" placeholder="Descripción" class="flex-1 border border-gray-300 p-2 rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500"><input type="number" id="tareaVal1" oninput="calcularTotal()" placeholder="$" class="w-24 border border-gray-300 p-2 rounded-lg text-sm text-right valor-tarea"></div>
+                    <div class="flex gap-2 items-center"><span class="text-xs font-bold text-gray-400 w-10">Item 2</span><input type="text" id="tareaDesc2" placeholder="Descripción" class="flex-1 border border-gray-300 p-2 rounded-lg text-sm outline-none"><input type="number" id="tareaVal2" oninput="calcularTotal()" placeholder="$" class="w-24 border border-gray-300 p-2 rounded-lg text-sm text-right valor-tarea"></div>
+                    <div class="flex gap-2 items-center"><span class="text-xs font-bold text-gray-400 w-10">Item 3</span><input type="text" id="tareaDesc3" placeholder="Descripción" class="flex-1 border border-gray-300 p-2 rounded-lg text-sm outline-none"><input type="number" id="tareaVal3" oninput="calcularTotal()" placeholder="$" class="w-24 border border-gray-300 p-2 rounded-lg text-sm text-right valor-tarea"></div>
+                    <div class="flex gap-2 items-center"><span class="text-xs font-bold text-gray-400 w-10">Item 4</span><input type="text" id="tareaDesc4" placeholder="Descripción" class="flex-1 border border-gray-300 p-2 rounded-lg text-sm outline-none"><input type="number" id="tareaVal4" oninput="calcularTotal()" placeholder="$" class="w-24 border border-gray-300 p-2 rounded-lg text-sm text-right valor-tarea"></div>
+                    <div class="flex gap-2 items-center"><span class="text-xs font-bold text-gray-400 w-10">Item 5</span><input type="text" id="tareaDesc5" placeholder="Descripción" class="flex-1 border border-gray-300 p-2 rounded-lg text-sm outline-none"><input type="number" id="tareaVal5" oninput="calcularTotal()" placeholder="$" class="w-24 border border-gray-300 p-2 rounded-lg text-sm text-right valor-tarea"></div>
+                    <div class="flex gap-2 items-center"><span class="text-xs font-bold text-gray-400 w-10">Item 6</span><input type="text" id="tareaDesc6" placeholder="Descripción" class="flex-1 border border-gray-300 p-2 rounded-lg text-sm outline-none"><input type="number" id="tareaVal6" oninput="calcularTotal()" placeholder="$" class="w-24 border border-gray-300 p-2 rounded-lg text-sm text-right valor-tarea"></div>
+                </div>
+            </div>
+
+            <div class="border-t pt-4 bg-orange-50 p-4 rounded-lg border border-orange-200">
+                <div class="flex items-center justify-between mb-3">
+                    <label class="text-sm font-bold text-gray-700">🏗️ Materiales incluidos</label>
+                    <select id="incluyeMateriales" onchange="toggleMateriales()" class="border border-gray-300 p-1.5 rounded-lg bg-white font-bold cursor-pointer">
+                        <option value="NO">NO</option>
+                        <option value="SI">SI</option>
+                    </select>
+                </div>
+                <div id="detalle-materiales" style="display: none;" class="space-y-2 mt-2">
                     <div class="flex gap-2 items-center">
-                        <span class="text-xs font-bold text-gray-400 w-10">Item 1</span>
-                        <input type="text" id="tareaDesc1" placeholder="Descripción" class="flex-1 border border-gray-300 p-2 rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500">
-                        <input type="number" id="tareaVal1" oninput="calcularTotal()" placeholder="$" class="w-24 border border-gray-300 p-2 rounded-lg text-sm text-right outline-none valor-tarea">
+                        <input type="text" id="descMateriales" placeholder="Descripción de materiales" class="flex-1 border border-gray-300 p-2 rounded-lg text-sm outline-none bg-white">
+                        <input type="number" id="costoMateriales" oninput="calcularTotal()" placeholder="$ Valor" class="w-24 border border-gray-300 p-2 rounded-lg text-sm text-right bg-white">
                     </div>
-                    <div class="flex gap-2 items-center">
-                        <span class="text-xs font-bold text-gray-400 w-10">Item 2</span>
-                        <input type="text" id="tareaDesc2" placeholder="Descripción" class="flex-1 border border-gray-300 p-2 rounded-lg text-sm outline-none">
-                        <input type="number" id="tareaVal2" oninput="calcularTotal()" placeholder="$" class="w-24 border border-gray-300 p-2 rounded-lg text-sm text-right outline-none valor-tarea">
+                </div>
+            </div>
+
+            <div class="border-t pt-4">
+                <label class="block text-sm font-bold text-gray-700">💰 Total del trabajo a realizar</label>
+                <div id="totalMostrado" class="w-full border border-gray-300 p-3 rounded-lg font-bold text-2xl text-orange-600 bg-white text-right">
+                    $ 0,00
+                </div>
+            </div>
+            
+            <button onclick="prepararPDF()" class="w-full bg-orange-600 hover:bg-orange-700 text-white py-4 rounded-xl font-bold shadow-md transition-all transform active:scale-95">
+                📥 GENERAR Y DESCARGAR PDF
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function toggleMateriales() {
+            const incluye = document.getElementById('incluyeMateriales').value;
+            const divDetalle = document.getElementById('detalle-materiales');
+            const inputValor = document.getElementById('costoMateriales');
+            if (incluye === "SI") { divDetalle.style.display = 'block'; } 
+            else { divDetalle.style.display = 'none'; inputValor.value = ""; calcularTotal(); }
+        }
+
+        function calcularTotal() {
+            let total = 0;
+            document.querySelectorAll('.valor-tarea

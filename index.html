@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MHE FULL SERVICES - Presupuestos y Recibos</title>
+    <title>MHE FULL SERVICES - Sistema de Gestión</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
@@ -22,17 +22,29 @@
             
             <select id="actividad" class="border p-2 rounded w-full outline-none bg-white font-semibold">
                 <option value="Electricidad">Electricidad</option>
-                <option value="HVAC">HVAC (Air Conditioning)</option>
+                <option value="HVAC">HVAC (Heating & Air Conditioning)</option>
                 <option value="Construcción en seco">Construcción en seco</option>
             </select>
             
             <div class="border-t pt-4">
                 <p class="font-bold mb-2">Tareas a realizar:</p>
                 <div class="space-y-2">
-                    <div class="flex gap-2"><textarea id="d1" placeholder="Tarea 1" class="flex-1 border p-2 rounded text-sm outline-none resize-none" rows="1"></textarea><input type="number" id="v1" oninput="calcularTotal()" placeholder="$" class="w-24 border p-2 rounded text-sm text-right item-valor h-10"></div>
-                    <div class="flex gap-2"><textarea id="d2" placeholder="Tarea 2" class="flex-1 border p-2 rounded text-sm outline-none resize-none" rows="1"></textarea><input type="number" id="v2" oninput="calcularTotal()" placeholder="$" class="w-24 border p-2 rounded text-sm text-right item-valor h-10"></div>
-                    <div class="flex gap-2"><textarea id="d3" placeholder="Tarea 3" class="flex-1 border p-2 rounded text-sm outline-none resize-none" rows="1"></textarea><input type="number" id="v3" oninput="calcularTotal()" placeholder="$" class="w-24 border p-2 rounded text-sm text-right item-valor h-10"></div>
-                    <div class="flex gap-2"><textarea id="d4" placeholder="Tarea 4" class="flex-1 border p-2 rounded text-sm outline-none resize-none" rows="1"></textarea><input type="number" id="v4" oninput="calcularTotal()" placeholder="$" class="w-24 border p-2 rounded text-sm text-right item-valor h-10"></div>
+                    <div class="flex gap-2">
+                        <textarea id="d1" placeholder="Tarea 1" class="flex-1 border p-2 rounded text-sm outline-none resize-none" rows="1"></textarea>
+                        <input type="number" id="v1" oninput="calcularTotal()" placeholder="$" class="w-24 border p-2 rounded text-sm text-right item-valor h-10">
+                    </div>
+                    <div class="flex gap-2">
+                        <textarea id="d2" placeholder="Tarea 2" class="flex-1 border p-2 rounded text-sm outline-none resize-none" rows="1"></textarea>
+                        <input type="number" id="v2" oninput="calcularTotal()" placeholder="$" class="w-24 border p-2 rounded text-sm text-right item-valor h-10">
+                    </div>
+                    <div class="flex gap-2">
+                        <textarea id="d3" placeholder="Tarea 3" class="flex-1 border p-2 rounded text-sm outline-none resize-none" rows="1"></textarea>
+                        <input type="number" id="v3" oninput="calcularTotal()" placeholder="$" class="w-24 border p-2 rounded text-sm text-right item-valor h-10">
+                    </div>
+                    <div class="flex gap-2">
+                        <textarea id="d4" placeholder="Tarea 4" class="flex-1 border p-2 rounded text-sm outline-none resize-none" rows="1"></textarea>
+                        <input type="number" id="v4" oninput="calcularTotal()" placeholder="$" class="w-24 border p-2 rounded text-sm text-right item-valor h-10">
+                    </div>
                 </div>
             </div>
 
@@ -62,28 +74,28 @@
             <hr class="my-6 border-2 border-dashed border-orange-200">
             
             <div class="bg-white border-2 border-orange-500 p-4 rounded-xl shadow-inner">
-                <h3 class="font-bold text-orange-600 mb-3 text-center underline">GESTIÓN DE RECIBO Y COBRO</h3>
+                <h3 class="font-bold text-orange-600 mb-3 text-center underline">GESTIÓN DE RECIBO</h3>
                 
-                <label class="block text-sm font-bold mb-1">Estado:</label>
+                <label class="block text-sm font-bold mb-1">Estado del trabajo:</label>
                 <select id="estadoPresupuesto" onchange="mostrarOpcionesPago()" class="w-full border p-2 rounded mb-4 bg-orange-50">
                     <option value="pendiente">Pendiente de Aceptación</option>
-                    <option value="aceptado">Aceptado / Generar Recibo</option>
+                    <option value="aceptado">Aceptado - Registrar Pago</option>
                 </select>
 
-                <div id="seccionPago" class="hidden space-y-4 animate-pulse">
+                <div id="seccionPago" class="hidden space-y-4">
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="text-xs font-bold uppercase text-gray-500">Abonado Ahora:</label>
-                            <input type="number" id="montoAbonado" oninput="calcularSaldo()" placeholder="Ej: 5000" class="w-full border-2 border-green-500 p-2 rounded font-bold text-green-700">
+                            <label class="text-xs font-bold uppercase text-gray-500">Monto Abonado:</label>
+                            <input type="number" id="montoAbonado" oninput="calcularSaldo()" placeholder="Ej: 5000" class="w-full border-2 border-green-500 p-2 rounded font-bold text-green-700 outline-none">
                         </div>
                         <div>
-                            <label class="text-xs font-bold uppercase text-gray-500">Saldo Restante:</label>
+                            <label class="text-xs font-bold uppercase text-gray-500">Saldo Pendiente:</label>
                             <div id="txtSaldo" class="p-2 bg-gray-100 rounded font-bold text-red-600 text-lg">$ 0,00</div>
                         </div>
                     </div>
                     
-                    <button onclick="prepararPDF('recibo')" class="w-full bg-green-600 text-white py-4 rounded-xl font-bold shadow-lg hover:bg-green-700 transition-all flex justify-center items-center gap-2">
-                        <span>📄 GENERAR RECIBO DE PAGO</span>
+                    <button onclick="prepararPDF('recibo')" class="w-full bg-green-600 text-white py-4 rounded-xl font-bold shadow-lg hover:bg-green-700 transition-all">
+                        📄 GENERAR RECIBO CON FIRMA
                     </button>
                 </div>
             </div>
@@ -114,35 +126,48 @@
             const estado = document.getElementById('estadoPresupuesto').value;
             const seccion = document.getElementById('seccionPago');
             seccion.classList.toggle('hidden', estado !== 'aceptado');
-            if(estado === 'aceptado') calcularSaldo();
         }
 
         function calcularSaldo() {
             const abonado = parseFloat(document.getElementById('montoAbonado').value) || 0;
             const saldo = totalGlobal - abonado;
             document.getElementById('txtSaldo').innerText = "$ " + saldo.toLocaleString('es-AR', {minimumFractionDigits: 2});
-            return saldo;
         }
 
         function prepararPDF(tipo) {
-            const img = new Image();
-            img.src = 'mhe.png'; 
-            img.onload = () => finalizarPDF(img, tipo);
-            img.onerror = () => finalizarPDF(null, tipo);
-            setTimeout(() => { if(!img.complete) finalizarPDF(null, tipo); }, 1000);
+            const imgLogo = new Image();
+            imgLogo.src = 'mhe.png'; 
+            
+            const imgFirma = new Image();
+            imgFirma.src = 'firma.png'; 
+
+            let cargadas = 0;
+            const chequearCarga = () => {
+                cargadas++;
+                if (cargadas === 2) finalizarPDF(imgLogo, imgFirma, tipo);
+            };
+
+            imgLogo.onload = chequearCarga;
+            imgLogo.onerror = chequearCarga;
+            imgFirma.onload = chequearCarga;
+            imgFirma.onerror = chequearCarga;
+
+            // Por si las imágenes no existen o tardan
+            setTimeout(() => { if(cargadas < 2) finalizarPDF(imgLogo, imgFirma, tipo); }, 1200);
         }
 
-        function finalizarPDF(imgLogo, tipo) {
+        function finalizarPDF(imgLogo, imgFirma, tipo) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            const fecha = document.getElementById('fecha').value;
-            const cliente = document.getElementById('cliente').value;
-            const nro = document.getElementById('presupuestoNo').value;
+            
+            const fechaVal = document.getElementById('fecha').value;
+            const nroVal = document.getElementById('presupuestoNo').value;
+            const clienteVal = document.getElementById('cliente').value;
             const abonado = parseFloat(document.getElementById('montoAbonado').value) || 0;
-            const saldo = totalGlobal - abonado;
 
-            // Encabezado estético (Igual que el presupuesto)
-            doc.setFillColor(tipo === 'presupuesto' ? 234 : 22, tipo === 'presupuesto' ? 88 : 163, tipo === 'presupuesto' ? 12 : 74); // Naranja o Verde
+            // ENCABEZADO ESTÉTICO
+            const colorHeader = tipo === 'presupuesto' ? [234, 88, 12] : [22, 163, 74];
+            doc.setFillColor(colorHeader[0], colorHeader[1], colorHeader[2]);
             doc.rect(0, 0, 210, 40, 'F');
             
             if(imgLogo && imgLogo.complete && imgLogo.naturalWidth !== 0) {
@@ -153,17 +178,48 @@
             doc.setFontSize(22);
             doc.text("MHE FULL SERVICES", 50, 25);
             
-            doc.setTextColor(0, 0, 0);
+            doc.setTextColor(0);
             doc.setFontSize(10);
-            doc.text("Fecha: " + fecha, 10, 50);
-            doc.text((tipo === 'presupuesto' ? "Presupuesto Nº: " : "Recibo de Presupuesto Nº: ") + nro, 140, 50);
-            doc.text("Cliente: " + cliente, 10, 60);
+            doc.text("Fecha: " + fechaVal, 10, 50);
+            doc.text((tipo === 'presupuesto' ? "Presupuesto Nº: " : "Recibo de Pago Nº: ") + nroVal, 150, 50);
+            doc.text("Cliente: " + clienteVal, 10, 60);
 
             if(tipo === 'presupuesto') {
-                // ... (Lógica de presupuesto que ya tenías)
+                // LÓGICA DE PRESUPUESTO ORIGINAL
+                let y = 80;
                 doc.setFont("helvetica", "bold");
-                doc.text("TOTAL ESTIMADO: " + document.getElementById('txtTotal').innerText, 110, 150);
-                doc.save(`Presupuesto_${cliente}.pdf`);
+                doc.text("DESCRIPCIÓN TÉCNICA", 10, y);
+                doc.text("MONTO", 175, y);
+                doc.line(10, y+2, 200, y+2);
+                y += 10;
+                doc.setFont("helvetica", "normal");
+
+                for(let i=1; i<=5; i++){
+                    const d = document.getElementById('d'+i)?.value;
+                    const v = document.getElementById('v'+i)?.value;
+                    if(d){
+                        doc.text(d, 10, y, {maxWidth: 160});
+                        doc.text("$" + (parseFloat(v)||0).toLocaleString('es-AR'), 175, y);
+                        y += 10;
+                    }
+                }
+                
+                if(document.getElementById('incMat').value === "SI"){
+                    y += 5;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("MATERIALES INCLUIDOS:", 10, y);
+                    y += 7;
+                    doc.setFont("helvetica", "normal");
+                    doc.text(document.getElementById('descMat').value, 10, y, {maxWidth: 160});
+                    doc.text("$" + (parseFloat(document.getElementById('valMat').value)||0).toLocaleString('es-AR'), 175, y);
+                    y += 15;
+                }
+
+                doc.setFontSize(14);
+                doc.setFont("helvetica", "bold");
+                doc.text("TOTAL ESTIMADO: " + document.getElementById('txtTotal').innerText, 110, y + 10);
+                doc.save(`Presupuesto_${nroVal}.pdf`);
+
             } else {
                 // LÓGICA DE RECIBO
                 doc.setFontSize(16);
@@ -172,31 +228,36 @@
                 
                 doc.setFontSize(12);
                 doc.setFont("helvetica", "normal");
-                let textoRecibo = `He recibido de ${cliente} la cantidad de $ ${abonado.toLocaleString('es-AR')} por concepto de pago (o adelanto) de los trabajos detallados en el presupuesto Nº ${nro}.`;
-                doc.text(textoRecibo, 10, 95, {maxWidth: 180});
+                const texto = `He recibido de ${clienteVal} la suma de $ ${abonado.toLocaleString('es-AR')} por el trabajo realizado bajo el presupuesto Nº ${nroVal} en fecha ${fechaVal}.`;
+                doc.text(texto, 10, 95, {maxWidth: 180});
 
-                // Cuadro de Resumen de Cuenta
+                // Cuadro de Saldo
                 doc.setDrawColor(200);
                 doc.setFillColor(245, 245, 245);
-                doc.rect(10, 120, 190, 40, 'FD');
+                doc.rect(10, 115, 190, 35, 'FD');
                 
                 doc.setFont("helvetica", "bold");
-                doc.text("RESUMEN DE CUENTA:", 15, 130);
+                doc.text("RESUMEN DE CUENTA", 15, 125);
                 doc.setFont("helvetica", "normal");
-                doc.text(`Total del Trabajo: $ ${totalGlobal.toLocaleString('es-AR')}`, 15, 140);
-                doc.text(`Total Abonado a la fecha: $ ${abonado.toLocaleString('es-AR')}`, 15, 147);
+                doc.text(`Total Presupuestado: $ ${totalGlobal.toLocaleString('es-AR')}`, 15, 135);
+                doc.text(`Abonado en este acto: $ ${abonado.toLocaleString('es-AR')}`, 15, 142);
                 
-                doc.setFontSize(14);
-                doc.setTextColor(saldo > 0 ? 200 : 0, 0, 0); // Rojo si falta pagar
-                doc.text(`SALDO RESTANTE: $ ${saldo.toLocaleString('es-AR')}`, 15, 156);
+                const saldoFinal = totalGlobal - abonado;
+                doc.setFont("helvetica", "bold");
+                doc.setTextColor(saldoFinal > 0 ? 200 : 0, 0, 0);
+                doc.text(`SALDO RESTANTE: $ ${saldoFinal.toLocaleString('es-AR')}`, 120, 142);
 
-                // Firma
+                // SECCIÓN DE FIRMA DIGITAL
+                const yFirma = 180;
+                if(imgFirma && imgFirma.complete && imgFirma.naturalWidth !== 0) {
+                    doc.addImage(imgFirma, 'PNG', 140, yFirma - 18, 40, 20);
+                }
                 doc.setTextColor(0);
-                doc.line(130, 190, 190, 190);
+                doc.line(130, yFirma, 190, yFirma);
                 doc.setFontSize(10);
-                doc.text("Firma MHE Full Services", 140, 195);
+                doc.text("Firma MHE Full Services", 140, yFirma + 5);
 
-                doc.save(`Recibo_MHE_${cliente}.pdf`);
+                doc.save(`Recibo_MHE_${nroVal}.pdf`);
             }
         }
     </script>

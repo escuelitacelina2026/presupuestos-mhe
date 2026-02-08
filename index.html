@@ -12,35 +12,22 @@
     <div class="max-w-xl mx-auto bg-white p-6 rounded-xl shadow-lg border-t-8 border-orange-500">
         <h1 class="text-2xl font-bold text-center mb-6">MHE Full Services</h1>
         
-        <div class="space-y-4">
+        <div id="seccionPresupuesto" class="space-y-4">
+            <h2 class="font-bold text-gray-600 border-b pb-1 text-sm uppercase">Cargar Presupuesto</h2>
             <div class="grid grid-cols-2 gap-4">
                 <input type="date" id="fecha" class="border p-2 rounded w-full outline-none">
                 <input type="text" id="presupuestoNo" placeholder="Presupuesto Nº" class="border p-2 rounded w-full outline-none">
             </div>
-
             <input type="text" id="cliente" placeholder="Nombre del Cliente" class="border p-2 rounded w-full outline-none">
             
-            <select id="actividad" class="border p-2 rounded w-full outline-none bg-white font-semibold">
-                <option value="Electricidad">Electricidad</option>
-                <option value="HVAC">HVAC (Heating & Air Conditioning)</option>
-                <option value="Construcción en seco">Construcción en seco</option>
-            </select>
-            
-            <div class="border-t pt-4">
-                <p class="font-bold mb-2">Tareas a realizar:</p>
-                <div class="space-y-2">
-                    <div class="flex gap-2">
-                        <textarea id="d1" placeholder="Tarea 1" class="flex-1 border p-2 rounded text-sm outline-none resize-none" rows="1"></textarea>
-                        <input type="number" id="v1" oninput="calcularTotal()" placeholder="$" class="w-24 border p-2 rounded text-sm text-right item-valor h-10">
-                    </div>
-                    <div class="flex gap-2">
-                        <textarea id="d2" placeholder="Tarea 2" class="flex-1 border p-2 rounded text-sm outline-none resize-none" rows="1"></textarea>
-                        <input type="number" id="v2" oninput="calcularTotal()" placeholder="$" class="w-24 border p-2 rounded text-sm text-right item-valor h-10">
-                    </div>
-                    <div class="flex gap-2">
-                        <textarea id="d3" placeholder="Tarea 3" class="flex-1 border p-2 rounded text-sm outline-none resize-none" rows="1"></textarea>
-                        <input type="number" id="v3" oninput="calcularTotal()" placeholder="$" class="w-24 border p-2 rounded text-sm text-right item-valor h-10">
-                    </div>
+            <div class="space-y-2">
+                <div class="flex gap-2">
+                    <textarea id="d1" placeholder="Tarea 1" class="flex-1 border p-2 rounded text-sm outline-none resize-none" rows="1"></textarea>
+                    <input type="number" id="v1" oninput="calcularTotalPresu()" placeholder="$" class="w-24 border p-2 rounded text-sm text-right item-valor h-10">
+                </div>
+                <div class="flex gap-2">
+                    <textarea id="d2" placeholder="Tarea 2" class="flex-1 border p-2 rounded text-sm outline-none resize-none" rows="1"></textarea>
+                    <input type="number" id="v2" oninput="calcularTotalPresu()" placeholder="$" class="w-24 border p-2 rounded text-sm text-right item-valor h-10">
                 </div>
             </div>
 
@@ -49,123 +36,146 @@
                 <span id="txtTotal" class="text-2xl font-bold text-orange-600">$ 0,00</span>
             </div>
 
-            <button onclick="prepararPDF('presupuesto')" class="w-full bg-gray-800 text-white py-3 rounded-xl font-bold hover:bg-black transition-all">
+            <button onclick="generarPDF('presupuesto')" class="w-full bg-gray-800 text-white py-3 rounded-xl font-bold hover:bg-black transition-all">
                 📥 DESCARGAR PRESUPUESTO
             </button>
+        </div>
 
-            <hr class="my-6 border-2 border-dashed border-orange-200">
+        <hr class="my-8 border-2 border-dashed border-orange-200">
+        
+        <div class="bg-white border-2 border-green-600 p-4 rounded-xl shadow-inner">
+            <h3 class="font-bold text-green-700 mb-4 text-center text-lg underline">EMITIR RECIBO DE PAGO</h3>
             
-            <div class="bg-white border-2 border-orange-500 p-4 rounded-xl shadow-inner">
-                <h3 class="font-bold text-orange-600 mb-3 text-center underline">GENERAR RECIBO</h3>
-                
-                <div class="space-y-4">
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="text-xs font-bold uppercase text-gray-500">Monto Abonado:</label>
-                            <input type="number" id="montoAbonado" oninput="calcularSaldo()" placeholder="Ej: 5000" class="w-full border-2 border-green-500 p-2 rounded font-bold text-green-700 outline-none">
-                        </div>
-                        <div>
-                            <label class="text-xs font-bold uppercase text-gray-500">Saldo Pendiente:</label>
-                            <div id="txtSaldo" class="p-2 bg-gray-100 rounded font-bold text-red-600 text-lg">$ 0,00</div>
-                        </div>
+            <div class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-xs font-bold text-gray-500">Fecha de Pago:</label>
+                        <input type="date" id="reciboFecha" class="w-full border p-2 rounded outline-none">
                     </div>
-                    
-                    <button onclick="prepararPDF('recibo')" class="w-full bg-green-600 text-white py-4 rounded-xl font-bold shadow-lg hover:bg-green-700 transition-all">
-                        📄 GENERAR RECIBO CON FIRMA
-                    </button>
+                    <div>
+                        <label class="text-xs font-bold text-gray-500">Referencia Presupuesto Nº:</label>
+                        <input type="text" id="reciboNroPresu" placeholder="Ej: 1025" class="w-full border p-2 rounded outline-none font-bold">
+                    </div>
                 </div>
+
+                <div>
+                    <label class="text-xs font-bold text-gray-500">Cliente:</label>
+                    <input type="text" id="reciboCliente" placeholder="Nombre completo" class="w-full border p-2 rounded outline-none">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-xs font-bold text-green-700 uppercase">Monto Recibido ($):</label>
+                        <input type="number" id="montoAbonado" oninput="calcularSaldosRecibo()" placeholder="0.00" class="w-full border-2 border-green-500 p-2 rounded font-bold text-green-700 text-lg">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-red-600 uppercase">Falta Abonar ($):</label>
+                        <input type="number" id="montoRestante" placeholder="Opcional" class="w-full border-2 border-red-400 p-2 rounded font-bold text-red-600 text-lg">
+                    </div>
+                </div>
+                
+                <button onclick="generarPDF('recibo')" class="w-full bg-green-600 text-white py-4 rounded-xl font-bold shadow-lg hover:bg-green-700 transition-all">
+                    📄 GENERAR Y DESCARGAR RECIBO
+                </button>
             </div>
         </div>
     </div>
 
     <script>
-        // Imagen de la firma incrustada (Base64) para que no falle nunca
+        // Imagen de la firma incrustada (Base64)
         const firmaBase64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAABACAYAAABf8z8XAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAJnSURBVHgB7ZxBbtpAFIY/Y89SNoi6Y9mIskH9uEDtLpI9SHeV7EG6u6p2F6jtAbpYskHUC1C6idRLRBYV8mYxHowZ2xjGNoYp/0pIsX0e8817M+/N8IcghI78+PAtvbu/m0Wv3z9M6+Y9vXoYVl+vFvVPr9PrtEreX39Y/R79fvN69Vz6Pfr39m8GofG2L6p8fO2L6p9XfRz/WfS+YtXz5N4PofG/i8L7p4mC8K6qfHzti/I65e9H9v6v9Xq/GUTG9mUVmreXh6R06N76p0L1931p30fXf8f6vY57PyB0KAnC9vXfH+v9/vV6EBr7866Y+96E3hTjR9r3EfX60fXp569BZA6vY3P86vXmY9r3kffv9z/q9en3L0HkV3Ym+Hn998d6v1O9HoTG6qI70c/rvzvW+53r9SA07v789+9fO9b7neuNfB8DkAnp4vjYvO9e7+/L5yAyfRydU/S+Y73fuV4PIn92Xn9+f+Xvf8S/B6Gxd3YnXvWv97vXG/k9BqA+BCH5EIBUHoKQUghCSiEIKYUgZAgfT/uD6NPr9P6I3v/+j4X96H0f8T1GvP8z+HkM8vA6ts7p3X08vA7t63X6+fT69vU6ff9+/9f0PvH7Fw7P4XVsntX7+3jWp79Pv//U+9fX69L9C4fX8Xh6v5G39Y96/9f6Pfr+E+8/8f09IHTm48vX5P31h9Xv0e83r1fPpV8E8Wv9/vN69Vz6Pfr39m8GofEWhORDAFJ5CEJKIQgp9VvT094p6+n96vXmO9b7nes/uU6v0/vV6/Q6vU7vV6/T6/R+9To9YOfO6O//Wq9vX6+Hn8fAyP488vffm9D6j/X/u97vX+4H8X+lYq2V2S0AAAAASUVORK5CYII=";
 
-        let totalGlobal = 0;
-
-        function calcularTotal() {
+        function calcularTotalPresu() {
             let t = 0;
             document.querySelectorAll('.item-valor').forEach(i => { t += parseFloat(i.value) || 0; });
-            totalGlobal = t;
             document.getElementById('txtTotal').innerText = "$ " + t.toLocaleString('es-AR', {minimumFractionDigits: 2});
-            calcularSaldo();
         }
 
-        function calcularSaldo() {
-            const abonado = parseFloat(document.getElementById('montoAbonado').value) || 0;
-            const saldo = totalGlobal - abonado;
-            document.getElementById('txtSaldo').innerText = "$ " + saldo.toLocaleString('es-AR', {minimumFractionDigits: 2});
+        // Esta función ayuda a que si estás cargando un presupuesto ahora, te ahorre escribir en el recibo
+        function calcularSaldosRecibo() {
+            // Solo ayuda si hay datos arriba, sino el usuario escribe manual
         }
 
-        function prepararPDF(tipo) {
-            const imgLogo = new Image();
-            imgLogo.src = 'mhe.png'; // El logo sigue igual
-            
-            // Usamos la firma que ya está cargada en la variable firmaBase64
-            const imgFirma = new Image();
-            imgFirma.src = firmaBase64;
-
-            imgLogo.onload = () => finalizarPDF(imgLogo, imgFirma, tipo);
-            imgLogo.onerror = () => finalizarPDF(null, imgFirma, tipo);
-        }
-
-        function finalizarPDF(imgLogo, imgFirma, tipo) {
+        function generarPDF(tipo) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             
-            const fechaVal = document.getElementById('fecha').value || new Date().toLocaleDateString();
-            const nroVal = document.getElementById('presupuestoNo').value || "000";
-            const clienteVal = document.getElementById('cliente').value || "Consumidor Final";
-            const abonado = parseFloat(document.getElementById('montoAbonado').value) || 0;
-
-            // ENCABEZADO
-            const colorHeader = tipo === 'presupuesto' ? [234, 88, 12] : [22, 163, 74];
-            doc.setFillColor(colorHeader[0], colorHeader[1], colorHeader[2]);
-            doc.rect(0, 0, 210, 40, 'F');
-            
-            if(imgLogo && imgLogo.complete && imgLogo.naturalWidth !== 0) {
-                doc.addImage(imgLogo, 'PNG', 10, 5, 30, 30);
-            }
-
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(22);
-            doc.text("MHE FULL SERVICES", 50, 25);
-            
-            doc.setTextColor(0);
-            doc.setFontSize(10);
-            doc.text("Fecha: " + fechaVal, 10, 50);
-            doc.text((tipo === 'presupuesto' ? "Presupuesto Nº: " : "Recibo de Pago Nº: ") + nroVal, 150, 50);
-            doc.text("Cliente: " + clienteVal, 10, 60);
-
-            if(tipo === 'presupuesto') {
-                // ... Lógica resumida de presupuesto para el ejemplo ...
-                doc.text("TOTAL ESTIMADO: " + document.getElementById('txtTotal').innerText, 10, 100);
-                doc.save(`Presupuesto_${nroVal}.pdf`);
-            } else {
-                // LÓGICA DE RECIBO
-                doc.setFontSize(16);
-                doc.setFont("helvetica", "bold");
-                doc.text("RECIBO DE PAGO", 10, 80);
+            if (tipo === 'presupuesto') {
+                const cliente = document.getElementById('cliente').value;
+                const nro = document.getElementById('presupuestoNo').value;
+                const fecha = document.getElementById('fecha').value;
                 
-                doc.setFontSize(12);
+                doc.setFillColor(234, 88, 12);
+                doc.rect(0, 0, 210, 40, 'F');
+                doc.setTextColor(255);
+                doc.setFontSize(22);
+                doc.text("MHE FULL SERVICES", 50, 25);
+                
+                doc.setTextColor(0);
+                doc.setFontSize(10);
+                doc.text(`Presupuesto Nº: ${nro}`, 10, 50);
+                doc.text(`Cliente: ${cliente}`, 10, 60);
+                doc.text(`Total: ${document.getElementById('txtTotal').innerText}`, 10, 80);
+                doc.save(`Presupuesto_${nro}.pdf`);
+
+            } else {
+                // LÓGICA DE RECIBO INDEPENDIENTE
+                const rFecha = document.getElementById('reciboFecha').value;
+                const rCliente = document.getElementById('reciboCliente').value;
+                const rNro = document.getElementById('reciboNroPresu').value;
+                const rAbonado = parseFloat(document.getElementById('montoAbonado').value) || 0;
+                const rRestante = parseFloat(document.getElementById('montoRestante').value) || 0;
+
+                // Validar datos mínimos
+                if(!rCliente || !rAbonado) {
+                    alert("Por favor completa el nombre del cliente y el monto abonado.");
+                    return;
+                }
+
+                // Diseño Recibo
+                doc.setFillColor(22, 163, 74); // Verde
+                doc.rect(0, 0, 210, 40, 'F');
+                doc.setTextColor(255);
+                doc.setFontSize(22);
+                doc.text("MHE FULL SERVICES", 50, 25);
+
+                doc.setTextColor(0);
+                doc.setFontSize(14);
+                doc.setFont("helvetica", "bold");
+                doc.text("RECIBO DE PAGO", 10, 55);
+
+                doc.setFontSize(11);
                 doc.setFont("helvetica", "normal");
-                const texto = `He recibido de ${clienteVal} la suma de $ ${abonado.toLocaleString('es-AR')} por el trabajo realizado bajo el presupuesto Nº ${nroVal} en fecha ${fechaVal}.`;
-                doc.text(texto, 10, 95, {maxWidth: 180});
+                doc.text(`Fecha de emisión: ${rFecha}`, 10, 65);
+                doc.text(`Referencia Presupuesto Nº: ${rNro}`, 140, 65);
 
-                // Cuadro de Saldo
-                doc.setFillColor(245, 245, 245);
-                doc.rect(10, 115, 190, 35, 'F');
-                doc.text(`Total Presupuestado: $ ${totalGlobal.toLocaleString('es-AR')}`, 15, 130);
-                doc.text(`Saldo Restante: $ ${(totalGlobal - abonado).toLocaleString('es-AR')}`, 120, 130);
+                // Cuerpo del recibo
+                const textoRecibo = `He recibido de ${rCliente.toUpperCase()} la suma de $ ${rAbonado.toLocaleString('es-AR', {minimumFractionDigits: 2})} en concepto de pago por los servicios prestados según presupuesto de referencia.`;
+                doc.text(textoRecibo, 10, 80, {maxWidth: 185});
 
-                // SECCIÓN DE FIRMA (Usando la imagen incrustada)
-                const yFirma = 180;
-                doc.addImage(imgFirma, 'PNG', 140, yFirma - 18, 40, 20);
+                // Cuadro de saldos
+                doc.setFillColor(240, 240, 240);
+                doc.rect(10, 100, 190, 30, 'F');
+                doc.setFont("helvetica", "bold");
+                doc.text(`MONTO ABONADO AHORA: $ ${rAbonado.toLocaleString('es-AR')}`, 15, 110);
+                
+                if(rRestante > 0) {
+                    doc.setTextColor(200, 0, 0);
+                    doc.text(`SALDO RESTANTE PENDIENTE: $ ${rRestante.toLocaleString('es-AR')}`, 15, 120);
+                } else {
+                    doc.setTextColor(0, 100, 0);
+                    doc.text("ESTADO: TOTALMENTE ABONADO", 15, 120);
+                }
+
+                // Firma Digital Incrustada
+                doc.setTextColor(0);
+                const yFirma = 160;
+                doc.addImage(firmaBase64, 'PNG', 140, yFirma - 15, 40, 20);
                 doc.line(130, yFirma, 190, yFirma);
-                doc.text("Firma MHE Full Services", 140, yFirma + 5);
+                doc.setFontSize(9);
+                doc.text("MHE Full Services", 145, yFirma + 5);
 
-                doc.save(`Recibo_MHE_${nroVal}.pdf`);
+                doc.save(`Recibo_MHE_${rNro}.pdf`);
             }
         }
     </script>

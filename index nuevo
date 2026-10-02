@@ -1,0 +1,231 @@
+HTML
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MHE FULL SERVICES - Presupuestos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body class="bg-gray-100 p-4">
+
+    <div class="max-w-xl mx-auto bg-white p-6 rounded-xl shadow-lg border-t-8 border-orange-500">
+        <h1 class="text-2xl font-bold text-center mb-6">PRESUPUESTO - MHE Full Services</h1>
+        
+        <div class="space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+                <input type="date" id="fecha" class="border p-2 rounded w-full outline-none">
+                <input type="text" id="presupuestoNo" placeholder="Presupuesto Nº" class="border p-2 rounded w-full outline-none">
+            </div>
+
+            <input type="text" id="cliente" placeholder="Nombre del Cliente" class="border p-2 rounded w-full outline-none">
+            
+            <select id="actividad" class="border p-2 rounded w-full outline-none bg-white font-semibold">
+                <option value="Electricidad">Electricidad</option>
+                <option value="HVAC">HVAC (Heating Ventilation, and Air Conditioning)</option>
+                <option value="Construcción en seco">Construcción en seco</option>
+            </select>
+            
+            <div class="border-t pt-4">
+                <p class="font-bold mb-2">Tareas a realizar:</p>
+                <div class="space-y-2">
+                    <div class="flex gap-2">
+                        <textarea id="d1" placeholder="Tarea 1" class="flex-1 border p-2 rounded text-sm outline-none resize-none" rows="2"></textarea>
+                        <input type="number" id="v1" oninput="calcularTotal()" placeholder="$" class="w-28 border p-2 rounded text-sm text-right item-valor h-10">
+                    </div>
+                    <div class="flex gap-2">
+                        <textarea id="d2" placeholder="Tarea 2" class="flex-1 border p-2 rounded text-sm outline-none resize-none" rows="2"></textarea>
+                        <input type="number" id="v2" oninput="calcularTotal()" placeholder="$" class="w-28 border p-2 rounded text-sm text-right item-valor h-10">
+                    </div>
+                    <div class="flex gap-2">
+                        <textarea id="d3" placeholder="Tarea 3" class="flex-1 border p-2 rounded text-sm outline-none resize-none" rows="2"></textarea>
+                        <input type="number" id="v3" oninput="calcularTotal()" placeholder="$" class="w-28 border p-2 rounded text-sm text-right item-valor h-10">
+                    </div>
+                    <div class="flex gap-2">
+                        <textarea id="d4" placeholder="Tarea 4" class="flex-1 border p-2 rounded text-sm outline-none resize-none" rows="2"></textarea>
+                        <input type="number" id="v4" oninput="calcularTotal()" placeholder="$" class="w-28 border p-2 rounded text-sm text-right item-valor h-10">
+                    </div>
+                    <div class="flex gap-2">
+                        <textarea id="d5" placeholder="Tarea 5" class="flex-1 border p-2 rounded text-sm outline-none resize-none" rows="2"></textarea>
+                        <input type="number" id="v5" oninput="calcularTotal()" placeholder="$" class="w-28 border p-2 rounded text-sm text-right item-valor h-10">
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-orange-50 p-4 rounded border border-orange-200">
+                <div class="flex justify-between items-center mb-2">
+                    <label class="font-bold">¿Incluye Materiales?</label>
+                    <select id="incMat" onchange="verMat()" class="border p-1 rounded bg-white font-bold">
+                        <option value="NO">NO</option>
+                        <option value="SI">SI</option>
+                    </select>
+                </div>
+                <div id="cajaMat" class="hidden space-y-2 pt-2 border-t border-orange-200">
+                    <textarea id="descMat" placeholder="Descripción de materiales" class="w-full border p-2 rounded text-sm bg-white outline-none resize-none" rows="2"></textarea>
+                    <input type="number" id="valMat" oninput="calcularTotal()" placeholder="$ Valor Materiales" class="w-full border p-2 rounded text-sm text-right bg-white outline-none">
+                </div>
+            </div>
+
+            <div class="text-right p-4 bg-orange-100 rounded border border-orange-300">
+                <span class="font-bold text-gray-700">TOTAL ESTIMADO: </span>
+                <span id="txtTotal" class="text-2xl font-bold text-orange-600">$ 0,00</span>
+            </div>
+            
+            <button onclick="prepararPDF()" class="w-full bg-orange-600 text-white py-4 rounded-xl font-bold shadow-lg hover:bg-orange-700 transition-all transform active:scale-95">
+                📥 GENERAR Y DESCARGAR PDF
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function verMat() {
+            const si = document.getElementById('incMat').value === "SI";
+            document.getElementById('cajaMat').classList.toggle('hidden', !si);
+            calcularTotal();
+        }
+
+        function calcularTotal() {
+            let t = 0;
+            document.querySelectorAll('.item-valor').forEach(i => { t += parseFloat(i.value) || 0; });
+            if(document.getElementById('incMat').value === "SI") {
+                t += parseFloat(document.getElementById('valMat').value) || 0;
+            }
+            document.getElementById('txtTotal').innerText = "$ " + t.toLocaleString('es-AR', {minimumFractionDigits: 2});
+        }
+
+        function prepararPDF() {
+            const img = new Image();
+            img.src = 'mhe.png'; 
+            
+            img.onload = () => finalizarPDF(img);
+            img.onerror = () => finalizarPDF(null);
+            
+            setTimeout(() => { if(!img.complete) finalizarPDF(null); }, 1000);
+        }
+
+        function finalizarPDF(imgLogo) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Fondo del Encabezado
+            doc.setFillColor(234, 88, 12); // Naranja
+            doc.rect(0, 0, 210, 35, 'F');
+
+            // Logo y Título
+            if(imgLogo && imgLogo.complete && imgLogo.naturalWidth !== 0) {
+                doc.addImage(imgLogo, 'PNG', 10, 3, 28, 28);
+            }
+
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(20);
+            doc.setFont("helvetica", "bold");
+            doc.text("MHE FULL SERVICES", 45, 22);
+
+            // Datos Generales
+            doc.setTextColor(40, 40, 40);
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "normal");
+            
+            let fechaVal = document.getElementById('fecha').value;
+            let nroVal = document.getElementById('presupuestoNo').value;
+            let clienteVal = document.getElementById('cliente').value;
+            let rubroVal = document.getElementById('actividad').value;
+
+            doc.text(`Fecha: ${fechaVal}`, 10, 45);
+            doc.text(`Presupuesto Nº: ${nroVal}`, 140, 45);
+            doc.text(`Cliente: ${clienteVal}`, 10, 52);
+            doc.text(`Rubro: ${rubroVal}`, 10, 59);
+
+            doc.setDrawColor(220, 220, 220);
+            doc.line(10, 64, 200, 64);
+
+            // Cabecera Tabla
+            let y = 72;
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(10);
+            doc.text("DESCRIPCIÓN TÉCNICA", 10, y);
+            doc.text("MONTO", 195, y, { align: "right" });
+            
+            doc.setDrawColor(180, 180, 180);
+            doc.line(10, y + 2, 200, y + 2);
+            
+            y += 8;
+            doc.setFont("helvetica", "normal");
+
+            const maxAnchoTexto = 145; 
+            const posXMonto = 195;
+            const lineHeight = 5;
+
+            // Recorrer tareas con cálculo dinámico de altura
+            for(let i = 1; i <= 5; i++){
+                const d = document.getElementById('d' + i).value.trim();
+                const v = document.getElementById('v' + i).value;
+                
+                if(d){
+                    // Dividir el texto en líneas según el ancho máximo permitido
+                    const lineas = doc.splitTextToSize(d, maxAnchoTexto);
+                    const montoTexto = "$" + (parseFloat(v) || 0).toLocaleString('es-AR', {minimumFractionDigits: 2});
+
+                    // Imprimir el texto multilínea
+                    doc.text(lineas, 10, y);
+                    // Imprimir el monto alineado a la derecha en la primera línea del ítem
+                    doc.text(montoTexto, posXMonto, y, { align: "right" });
+
+                    // Incrementar 'y' dinámicamente según la cantidad de líneas que ocupó el texto
+                    y += (lineas.length * lineHeight) + 4;
+                }
+            }
+
+            // Sección de Materiales
+            if(document.getElementById('incMat').value === "SI"){
+                const descMat = document.getElementById('descMat').value.trim();
+                const valMat = document.getElementById('valMat').value;
+
+                if (y > 240) { doc.addPage(); y = 20; } // Control de salto de página
+
+                doc.setFont("helvetica", "bold");
+                doc.text("MATERIALES INCLUIDOS:", 10, y);
+                y += 6;
+
+                doc.setFont("helvetica", "normal");
+                if (descMat) {
+                    const lineasMat = doc.splitTextToSize(descMat, maxAnchoTexto);
+                    const montoMatText = "$" + (parseFloat(valMat) || 0).toLocaleString('es-AR', {minimumFractionDigits: 2});
+
+                    doc.text(lineasMat, 10, y);
+                    doc.text(montoMatText, posXMonto, y, { align: "right" });
+
+                    y += (lineasMat.length * lineHeight) + 6;
+                }
+            }
+
+            // Bloque Total Estimado
+            y += 4;
+            if (y > 250) { doc.addPage(); y = 20; }
+
+            doc.setFillColor(255, 237, 213); // Fondo naranja claro
+            doc.rect(10, y, 190, 12, 'F');
+            doc.setFontSize(11);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(234, 88, 12);
+            doc.text("TOTAL ESTIMADO:", 15, y + 8);
+            doc.text(document.getElementById('txtTotal').innerText, posXMonto - 5, y + 8, { align: "right" });
+
+            // Leyenda / Pie de página
+            y += 20;
+            if (y > 260) { doc.addPage(); y = 20; }
+
+            doc.setFontSize(8);
+            doc.setTextColor(120, 120, 120);
+            doc.setFont("helvetica", "italic");
+            doc.text("• Este presupuesto tiene una validez de 10 días corridos.", 10, y);
+            doc.text("• Los precios de materiales pueden variar sin previo aviso.", 10, y + 4);
+            doc.text("• MHE Full Services garantiza 3 meses por la mano de obra realizada.", 10, y + 8);
+
+            // Guardar documento
+            doc.save("Presupuesto_MHE.pdf");
+        }
+    </script>
+</body>
+</html>
